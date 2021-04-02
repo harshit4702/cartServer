@@ -17,7 +17,10 @@ const User= mongoose.model('users', new mongoose.Schema({
         type: String,
         required: true
     },
-
+    cart: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'cart'
+    }
 },{  timestamps: true }
 ));
 

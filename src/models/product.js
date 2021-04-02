@@ -10,7 +10,7 @@ const Product= mongoose.model('products', new mongoose.Schema({
         required: true
     },
     price: {
-        type: Date,
+        type: String,
         required: true
     },
     discount: {

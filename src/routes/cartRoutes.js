@@ -14,7 +14,6 @@ router.post('/',async (req,res)=>{
 
     const product = Product.findById(req.body.product).populate('product');
     const user = User.findById(req.body.user).populate('user');
-    console.log(req.body.user);
     const cart = new Cart(req.body);
     
     await cart.save();
@@ -23,6 +22,8 @@ router.post('/',async (req,res)=>{
 });
 
 router.patch('/:id',async (req,res)=>{
+
+    console.log('hello');
 
     let cart = await Cart.findByIdAndUpdate(req.params.id, req.body,{new:true});
     

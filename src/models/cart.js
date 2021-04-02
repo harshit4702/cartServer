@@ -1,17 +1,16 @@
 const mongoose =require('mongoose');
 
+const productsInCartSchema= {
+    productId: mongoose.Schema.Types.ObjectId,
+    quantity:{
+        type: Number
+    }
+};
+
 const Cart= mongoose.model('cart', new mongoose.Schema({
     product: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'products'
-    },
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'users'
-    },
-    value:{
-        type: Number,
-        required: true
+        type: [productsInCartSchema],
+        ref: 'products',
     }
 },{  timestamps: true }
 ));
