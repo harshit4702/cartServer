@@ -19,6 +19,7 @@
     "express": "^4.17.1",
     "express-generator": "^4.16.1",
     "helmet": "^4.4.1",
+    "lodash": "^4.17.21",
     "mongoose": "^5.12.2"
   }
 }

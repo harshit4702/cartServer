@@ -1,19 +1,30 @@
 const express= require('express');
 const router= express.Router();
+const  _ = require('lodash');
 const {Cart}= require('../models/cart');
 const { Product } = require('../models/product');
 const { User } = require('../models/user');
 
 router.get('/', async function(req,res){
-
     const carts= await Cart.find();
     res.send(carts);
 });
 
+router.get('/:id', async function(req,res){
+    console.log(req.params.id);
+    var arr=[];
+    const cart= await Cart.find({_id:req.params.id});
+    for await (let item of cart[0].product){
+        const pro= await Product.find({_id:item.productId});
+        const {_id,discount,name,src,price}= pro[0];
+        arr.push({quantity:item.quantity,_id,discount,name,src,price});
+    }
+    console.log(Object.values(arr));
+    res.send(arr);
+});
+
 router.post('/',async (req,res)=>{
 
-    const product = Product.findById(req.body.product).populate('product');
-    const user = User.findById(req.body.user).populate('user');
     const cart = new Cart(req.body);
     
     await cart.save();
@@ -21,21 +32,58 @@ router.post('/',async (req,res)=>{
     res.end();
 });
 
-router.patch('/:id',async (req,res)=>{
+router.post('/:id',async (req,res)=>{
 
-    console.log('hello');
+    let cart= await Cart.find({_id:req.params.id});
+
+    cart[0].product.push(req.body);
+
+    console.log(cart[0].product);
+
+    const ob= {
+        product: cart[0].product
+    }
+
+    cart = await Cart.findByIdAndUpdate(req.params.id, ob,{new:true});
+    
+    await cart.save();
+
+    const pro= await Product.find({_id:req.body.productId});
+    const {_id,discount,name,src,price}= pro[0];
+
+    res.send({quantity:req.body.quantity,_id,discount,name,src,price});
+});
+
+router.patch('/:id/:productId/:quantity',async (req,res)=>{
 
     let cart = await Cart.findByIdAndUpdate(req.params.id, req.body,{new:true});
     
     await cart.save();
 
-    res.end();
+    const pro= await Product.find({_id:req.params.productId});
+    const {_id,discount,name,src,price}= pro[0];
+    
+    res.send({quantity:req.params.quantity,_id,discount,name,src,price});
 });
 
-router.delete('/:id', async (req,res)=>{
+router.delete('/:id/:productId', async (req,res)=>{
     
-    const remove= await Cart.deleteOne({_id:req.params.id});
-    if(!remove)
+    let cart= await Cart.find({_id:req.params.id});
+    console.log(req.params.productId);
+    console.log(cart[0].product);
+    await _.remove(cart[0].product,(item)=> {
+        return item.productId==req.params.productId;
+    });
+
+    console.log(cart[0].product);
+
+    const ob= {
+        product: cart[0].product
+    }
+
+    cart = await Cart.findByIdAndUpdate(req.params.id, ob,{new:true});
+
+    if(!cart)
         return res.status(404).send("Given ID was not found");//404 is error not found
     
     res.end();
