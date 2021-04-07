@@ -57,7 +57,7 @@ router.post('/login',async (req,res)=>{
 
     console.log(user);
 
-    res.send({_id:user._id,name: user.name,email: user.email,address:user.address});
+    res.send({_id:user._id,name: user.name,email: user.email,cart:user.cart,address:user.address});
 });
 
 router.patch('/:id',async (req,res)=>{
