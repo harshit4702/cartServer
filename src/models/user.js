@@ -2,8 +2,7 @@ const mongoose =require('mongoose');
 
 const User= mongoose.model('users', new mongoose.Schema({
     name: {
-        type: String,
-        required: true
+        type: String
     },
     email:{
         type: String,
@@ -14,12 +13,12 @@ const User= mongoose.model('users', new mongoose.Schema({
         required: true
     },
     address:{
-        type: String,
-        required: true
+        type: String
     },
     cart: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'cart'
+        ref: 'cart',
+        required:true
     }
 },{  timestamps: true }
 ));
