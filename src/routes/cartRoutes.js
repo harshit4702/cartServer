@@ -29,7 +29,7 @@ router.post('/',async (req,res)=>{
     
     await cart.save();
 
-    res.end();
+    res.send(cart._id);
 });
 
 router.post('/:id',async (req,res)=>{
@@ -87,6 +87,7 @@ router.delete('/:id/:productId', async (req,res)=>{
         return res.status(404).send("Given ID was not found");//404 is error not found
     
     res.end();
+
 });
 
 module.exports= router;
