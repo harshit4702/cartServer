@@ -6,10 +6,17 @@ const Product= mongoose.model('products', new mongoose.Schema({
         required: true
     },
     src:{
-        type: [String],
+        type: [{
+            data: Buffer,
+            contentType: String
+        }],
         required: true
     },
     price: {
+        type: String,
+        required: true
+    },
+    description: {
         type: String,
         required: true
     },
