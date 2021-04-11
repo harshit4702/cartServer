@@ -1,6 +1,6 @@
 const mongoose =require('mongoose');
 
-const Product= mongoose.model('products', new mongoose.Schema({
+const Product = mongoose.model('products', new mongoose.Schema({
     name: {
         type: String,
         required: true
@@ -10,7 +10,6 @@ const Product= mongoose.model('products', new mongoose.Schema({
             data: Buffer,
             contentType: String
         }],
-        required: true
     },
     price: {
         type: String,
@@ -20,6 +19,14 @@ const Product= mongoose.model('products', new mongoose.Schema({
         type: String,
         required: true
     },
+    // category: {
+    //     type: String,
+    //     required: true
+    // },
+    // subcategory: {
+    //     type: String,
+    //     required: true
+    // },
     discount: {
         type: String,
         required: true

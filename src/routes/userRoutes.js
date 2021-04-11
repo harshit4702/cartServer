@@ -13,7 +13,7 @@ router.get('/', async function(req,res){
 
 router.post('/signUp',async (req,res)=>{
 
-    const uniqueUser= await User.findOne({email:req.body.email})
+    const uniqueUser = await User.findOne({email:req.body.email})
 
     console.log(uniqueUser);
 
