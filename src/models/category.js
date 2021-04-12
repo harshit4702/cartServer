@@ -14,7 +14,6 @@ function validateCategory(input)
 {
     const schema = Joi.object({
         name: Joi.string().required(),
-        marks: Joi.number()
     });
     return result = schema.validate(input);
 }

@@ -5,6 +5,10 @@ const SubcategorySchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
+    },
+    category: {
+        type: String,
+        required: true
     }
 });
 
@@ -14,7 +18,7 @@ function validateSubcategory(input)
 {
     const schema = Joi.object({
         name: Joi.string().required(),
-        marks: Joi.number()
+        category: Joi.string().required()
     });
     return result = schema.validate(input);
 }
