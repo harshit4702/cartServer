@@ -1,0 +1,75 @@
+<%- include('header.ejs') %>
+<body>
+  <div class="ui container-fluid">
+
+    <img src="https://static01.nyt.com/images/2018/08/01/dining/01Grocery1-alpha/01Grocery1-videoSixteenByNineJumbo1600-v4.jpg" style="height: 70vh;width: 100vw">
+
+    <div class="d-flex" id="wrapper">
+
+        <!-- Sidebar -->
+        <div class="bg-light border-right" id="sidebar-wrapper">
+          <div class="sidebar-heading">Create </div>
+          <div class="list-group list-group-flush">
+            <a href="/category/form" class="list-group-item list-group-item-action bg-light">Add Category</a>
+            <a href="/subcategory/form" class="list-group-item list-group-item-action bg-light">Add Subcategory</a>
+            <a href="/product/form" class="list-group-item list-group-item-action bg-light">Add Products</a>
+        </div>
+          <div class="sidebar-heading">More </div>
+          <div class="list-group list-group-flush">
+            <a href="/api/get_orders" class="list-group-item list-group-item-action bg-light">Orders</a>
+            <a href="/api/get_returnOrders" class="list-group-item list-group-item-action bg-light">Return Requests</a>
+          </div>
+        </div>
+        <!-- /#sidebar-wrapper -->
+    
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+    
+          <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+            <button class="btn btn-primary" id="menu-toggle">Toggle Menu</button>
+    
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+    
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+              </ul>
+            </div>
+          </nav>
+
+
+
+    <div class="container-fluid">
+
+        <br/><br/>
+
+        <div class="row text-center">
+            <% for(var i=0;i<products.length ;i++) { %>
+                <div class="col-sm-4">
+                    <div class="card" style="width: 18rem;">
+                        <a href="">
+                            <img class="card-img-top" src="/product/photos/<%- products[i]._id %>/0" style="height:25vh; width:16vw" alt="Card image cap">
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title"><%- products[i].name %></h5>
+                            <p class="card-text"><%- products[i].description %></p>
+                            <p class="card-text">Price: ₹<%- products[i].price %></p>
+                        </div>
+            
+                        <div class="card-body">
+                            <a href="/product/edit/<%- products[i]._id %>" class="card-link">Edit</a>
+                            <a href="#" data-toggle="modal" data-target="#exampleModal<%- i %>" class="card-link">Delete</a>
+                        </div>
+                    </div>
+                </div>
+                <%- include('deleteModal.ejs',{link: `/product/delete/${products[i]._id}`, Sno: i }) %>
+                <br/><br/>
+            <% } %>
+        </div>
+      </div>
+    </div>
+  <script src="/cart.js"></script>
+</body>
+          
+
