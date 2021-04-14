@@ -1,8 +1,10 @@
 const express= require('express');
 const router= express.Router();
-const {Product}= require('../models/product');
+const _ = require('lodash');
 const formidable = require("formidable");
 const fs = require("fs");
+const { Cart } = require('../models/cart');
+const {Product}= require('../models/product');
 
 router.get('/',async function(req,res){
     const products= await Product.find();
@@ -152,10 +154,23 @@ router.post('/editing/:id',async (req,res)=>{
 });
 
 router.post('/delete/:id', async (req,res)=>{
-    
+
+    const carts= await Cart.find();
+
+    for await (let item of carts){
+      _.remove(item.product, (item)=> {
+        return item.productId == req.params.id
+      });
+
+      console.log(item);
+      
+      await Cart.findByIdAndUpdate(item._id, item ,{new:true});
+    }
+
     const remove= await Product.deleteOne({_id:req.params.id});
+
     if(!remove)
-        return res.status(404).send("Given ID was not found");//404 is error not found
+      return res.status(404).send("Given ID was not found");//404 is error not found*/
     
     res.redirect('/');
 });
