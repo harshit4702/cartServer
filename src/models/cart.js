@@ -1,7 +1,10 @@
 const mongoose =require('mongoose');
 
 const productsInCartSchema= {
-    productId: mongoose.Schema.Types.ObjectId,
+    productId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'product'
+    },
     quantity:{
         type: Number
     }

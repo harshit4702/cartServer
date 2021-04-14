@@ -19,14 +19,14 @@ const Product = mongoose.model('products', new mongoose.Schema({
         type: String,
         required: true
     },
-    // category: {
-    //     type: String,
-    //     required: true
-    // },
+    /*category: {
+            type: String,
+            required: true
+     },
     subcategory: {
         type: String,
         required: true
-    },
+    },*/
     discount: {
         type: String,
         required: true
