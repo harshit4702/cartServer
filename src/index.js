@@ -5,7 +5,8 @@ var bodyParser = require("body-parser");
 const config= require('config');
 var cookieParser = require('cookie-parser');
 const cors= require('cors');
-const { Product }= require('./models/product');
+const { Category }= require('./models/category');
+const { SubCategory }= require('./models/subCategory');
 
 app.set("view engine", "ejs");
 app.set('views', './src/views');
@@ -14,7 +15,7 @@ const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
-const subcategoryRoutes = require('./routes/subcategoryRoutes');
+const subCategoryRoutes = require('./routes/subCategoryRoutes');
 
 mongoose.connect(config.get('db'),{useNewUrlParser: true,useUnifiedTopology: true})
     .then(()=> console.log(`Connected to ${config.get('db')}...`))
@@ -26,7 +27,7 @@ mongoose.set('useFindAndModify', false);
 app.use(express.static("./src/public"));
 
 app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors());
 
@@ -34,12 +35,19 @@ app.use('/product',productRoutes);
 app.use('/cart',cartRoutes);
 app.use('/user',userRoutes);
 app.use('/category',categoryRoutes);
-app.use('/subcategory',subcategoryRoutes);
+app.use('/subCategory',subCategoryRoutes);
 
 
 app.get('/',async function(req,res){
-    const products = await Product.find();
-    res.render("index.ejs", { products });
+    const categories = await Category.find().populate('subCategories');
+
+    res.render("index.ejs", { 
+        array: categories,
+        type:'category',
+        text: 'Add Sub Category',
+        link:'subCategory',
+        title: 'Categories'
+    });
 });
 
 const port=process.env.PORT || 8080;

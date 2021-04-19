@@ -16,8 +16,8 @@ router.get('/:id', async function(req,res){
     const cart= await Cart.find({_id:req.params.id});
     for await (let item of cart[0].product){
         const pro= await Product.find({_id:item.productId});
-        const {_id,discount,name,src,price}= pro[0];
-        arr.push({quantity:item.quantity,_id,discount,name,src,price});
+        const {_id,description,discount,name,src,price}= pro[0];
+        arr.push({quantity:item.quantity,_id,discount,name,src,price,description});
     }
     console.log(Object.values(arr));
     res.send(arr);
@@ -48,10 +48,10 @@ router.post('/:id',async (req,res)=>{
     
     await cart.save();
 
-    const pro= await Product.find({_id:req.body.productId});
-    const {_id,discount,name,src,price}= pro[0];
+    const pro = await Product.find({_id:req.body.productId});
+    const {_id,discount,description,name,src,price}= pro[0];
 
-    res.send({quantity:req.body.quantity,_id,discount,name,src,price});
+    res.send({quantity:req.body.quantity,_id,discount,name,src,price,description});
 });
 
 router.patch('/:id/:productId/:quantity',async (req,res)=>{
@@ -61,9 +61,9 @@ router.patch('/:id/:productId/:quantity',async (req,res)=>{
     await cart.save();
 
     const pro= await Product.find({_id:req.params.productId});
-    const {_id,discount,name,src,price}= pro[0];
+    const {_id,discount,description,name,src,price}= pro[0];
     
-    res.send({quantity:req.params.quantity,_id,discount,name,src,price});
+    res.send({quantity:req.params.quantity,_id,discount,name,src,price,description});
 });
 
 router.delete('/:id/:productId', async (req,res)=>{

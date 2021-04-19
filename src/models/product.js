@@ -5,12 +5,10 @@ const Product = mongoose.model('products', new mongoose.Schema({
         type: String,
         required: true
     },
-    src:{
-        type: [{
-            data: Buffer,
-            contentType: String
-        }],
-    },
+    src:[{
+        data: Buffer,
+        contentType: String
+    }],
     price: {
         type: String,
         required: true
@@ -19,17 +17,13 @@ const Product = mongoose.model('products', new mongoose.Schema({
         type: String,
         required: true
     },
-    /*category: {
-            type: String,
-            required: true
-     },
-    subcategory: {
-        type: String,
-        required: true
-    },*/
     discount: {
         type: String,
         required: true
+    },
+    parent:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'subCategories'
     }
 },{  timestamps: true }
 ));

@@ -1,27 +1,30 @@
 const Joi = require('joi');
 const mongoose = require('mongoose');
 
-const SubcategorySchema = new mongoose.Schema({
+const SubCategorySchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
     },
-    category: {
-        type: String,
-        required: true
+    children: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'products'
+    }],
+    parent:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'categories'
     }
 });
 
-const Subcategory = mongoose.model('Subcategory' , SubcategorySchema) ;
+const SubCategory = mongoose.model('subCategories' , SubCategorySchema) ;
 
-function validateSubcategory(input)
+function validateSubCategory(input)
 {
     const schema = Joi.object({
-        name: Joi.string().required(),
-        category: Joi.string().required()
+        name: Joi.string().required()
     });
     return result = schema.validate(input);
 }
 
-module.exports.Subcategory = Subcategory ;
-module.exports.validate= validateSubcategory ;
+module.exports.SubCategory = SubCategory ;
+module.exports.validate= validateSubCategory ;
