@@ -5,10 +5,18 @@ const categorySchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
-    }
+    },
+    src:[{
+        data: Buffer,
+        contentType: String
+    }],
+    children: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'subCategories'
+    }]
 });
 
-const Category = mongoose.model('Category' , categorySchema) ;
+const Category = mongoose.model('categories' , categorySchema) ;
 
 function validateCategory(input)
 {

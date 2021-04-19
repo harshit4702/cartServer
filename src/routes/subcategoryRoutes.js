@@ -1,72 +1,123 @@
 const express= require('express');
 const router= express.Router();
-const {Subcategory , validate} = require('../models/subcategory');
-const { Category } = require('../models/category');
+const {SubCategory , validate} = require('../models/subCategory');
+const {Category } = require('../models/category');
+const {Product } = require('../models/product');
+const {Cart } = require('../models/cart');
 
 router.get('/', async function(req,res){
     const subcategory= await Subcategory.find();
     res.send(subcategory);
 });
 
-router.get('/form' ,async(req , res)=>{
-    const category = await Category.find();
-    res.render('createcat.ejs', {
-      link: "/subcategory/creating",
-      formname: 'Create Subcategory',
-      id: null,
-      label: 'Enter subcategory name',
-      name: "",
-      category,
-      prevcat: ""
+router.get('/:categoryId',async function(req,res){
+
+    const subCategories = await SubCategory.find({parent:req.params.categoryId}).populate('parent');
+
+    if(!subCategories[0])
+        return res.status(404).send('No Sub-Category Added');
+    
+    res.render("index.ejs", { 
+        array: subCategories,
+        type:'subCategory',
+        text: 'Add Product',
+        link:'product',
+        title: `Category:${subCategories[0].parent.name}`
+    });
+});
+
+router.get('/createForm/:categoryId' ,async(req , res)=>{
+    res.render('subCategoryForm.ejs', {
+        link: `/subCategory/creating/${req.params.categoryId}`,
+        name:"",
+        src:[]
     });
 });
   
-router.get('/edit/:id' ,async(req , res)=>{
-    const category = await Category.find();
-    const subcategory = await Subcategory.findById(req.params.id);
-    if (!subcategory) return res.status(404).send("Given ID was not found");
-    var name = subcategory.name;
-    var prevcat = subcategory.category;
-    res.render('createcat.ejs', {
-        link: `/subcategory/editing/${req.params.id}`,
-        label: 'Enter new subcategory name',
-        formname: 'Edit Subcategory',
-        id: subcategory._id,
-        name,
-        category,
-        prevcat
+router.get('/editForm/:id' ,async(req , res)=>{
+    
+    const subCategory = await SubCategory.findById(req.params.id);
+    
+    if (!subCategory)
+        return res.status(404).send("Given ID was not found");
+  
+    const {name,category}= subCategory;
+
+    res.render('subCategoryForm.ejs', {
+        link: `/subCategory/editing/${category}/${req.params.id}`,
+        name
     });
 });
   
-router.post('/creating',async (req,res)=>{
-    console.log('Here is error');
-    console.log(req.body);
+router.post('/creating/:categoryId',async (req,res)=>{
+   console.log(req.body);
     const { error } = validate(req.body) ;
     if(error) return res.status(400).send(error.details[0].message) ;
     
-    const subcategory = new Subcategory({
+    const category= await Category.findById(req.params.categoryId);
+
+    if(!category)
+        return res.status(404).send('Category Not Found');
+
+    const subCategory = new SubCategory({
         name: req.body.name,
-        category: req.body.category
+        parent: req.params.categoryId
     });
-    await subcategory.save();
-    res.redirect('/subcategory/form');
+
+    category.children.push(subCategory._id);
+
+    await category.save();
+    await subCategory.save();
+
+    res.redirect(`/subCategory/createForm/${req.params.categoryId}`);
 });
 
-router.post('/editing/:id',async (req,res)=>{
+router.post('/editing/:categoryId/:id',async (req,res)=>{
     const { error } = validate(req.body) ;
     if(error) return res.status(400).send(error.details[0].message) ;
 
-    let subcategory = await Subcategory.findByIdAndUpdate(req.params.id, req.body,{new:true});
-    await subcategory.save();
-    res.redirect('/subcategory/form');
+    let subCategory = await SubCategory.findByIdAndUpdate(req.params.id, req.body,{new:true});
+    await subCategory.save();
+    res.redirect(`/subCategory/${req.params.categoryId}`);
 });
 
-router.delete('/:id', async (req,res)=>{
-    
-    const remove = await Subcategory.deleteOne({_id:req.params.id});
-    if(!remove)
+router.post('/delete/:id', async (req,res)=>{
+
+    const subCategory = await SubCategory.findById(req.params.id);
+
+    if(!subCategory)
         return res.status(404).send("Given ID was not found");//404 is error not found
-    res.end();
+
+    const carts= await Cart.find();
+
+    for await (let item of carts){  
+        await Cart.findByIdAndUpdate(item._id, {
+            $pull:{
+                product:{
+                    productId: {
+                        $in: subCategory.children
+                    }
+                }
+            }
+        }  ,{new:true});
+
+    }
+
+    const deleteProducts = await Product.deleteMany({
+        _id:{
+            $in:subCategory.children
+        }
+    });
+
+    const removedSubCategory= await SubCategory.findByIdAndDelete(req.params.id);
+
+    await Category.findByIdAndUpdate(removedSubCategory.parent, {
+        $pull:{
+            children: req.params.id
+        }
+    } ,{new:true});
+
+    res.redirect(`/subCategory/${removedSubCategory.parent}`);
 });
 
 module.exports= router;

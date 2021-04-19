@@ -4,6 +4,7 @@ const _ = require('lodash');
 const formidable = require("formidable");
 const fs = require("fs");
 const { Cart } = require('../models/cart');
+const {SubCategory}= require('../models/subCategory');
 const {Product}= require('../models/product');
 
 router.get('/',async function(req,res){
@@ -11,10 +12,24 @@ router.get('/',async function(req,res){
     res.send(products);
 });
 
-router.get('/form' ,(req , res)=>{
-    console.log('Hi');
-    res.render('product.ejs', {
-      link: "/product/creating",
+router.get('/:subCategoryId',async function(req,res){
+  const products = await Product.find({parent:req.params.subCategoryId}).populate('parent');
+  
+  if(!products[0])
+    return res.status(404).send('No Product Added');
+
+  res.render("index.ejs", { 
+      array: products,
+      type:'product',
+      text: null,
+      link:'',
+      title: `Sub-Category:${products[0].parent.name}`
+  });
+});
+
+router.get('/createForm/:subCategoryId' ,(req , res)=>{
+    res.render('productForm.ejs', {
+      link: `/product/creating/${req.params.subCategoryId}`,
       id: null,
       name: "",
       price: "",
@@ -24,27 +39,30 @@ router.get('/form' ,(req , res)=>{
     });
 });
 
-router.get('/edit/:id' ,async(req , res)=>{
-    const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).send("Given ID was not found");
+router.get('/editForm/:id' ,async(req , res)=>{
 
-    const { name, description, price, src, discount } = product;
-    res.render("product", {
-    link: `/product/editing/${req.params.id}`,
-    id: product._id,
-    name,
-    description,
-    price,
-    src,
-    discount
+    const product = await Product.findById(req.params.id);
+
+    if (!product)
+      return res.status(404).send("Given ID was not found");
+
+    const { name, description, price, src, discount,parent } = product;
+    res.render("productForm.ejs", {
+      link: `/product/editing/${parent}/${req.params.id}`,
+      id: product._id,
+      name,
+      description,
+      price,
+      src,
+      discount
     });
 });
 
-router.post('/creating',async (req,res)=>{
+router.post('/creating/:subCategoryId',async (req,res)=>{
     let form = new formidable.IncomingForm();
     form.keepExtensions = true;
     
-    form.parse(req, (err, fields, file) => {
+    form.parse(req,async (err, fields, file) => {
 
       file = Object.values(file);
 
@@ -54,6 +72,11 @@ router.post('/creating',async (req,res)=>{
           error: "problem with image",
         });
       }
+
+    const subCategory= await SubCategory.findById(req.params.subCategoryId);
+
+    if(!subCategory)
+        return res.status(404).send('Sub Category Not Found');
       
       //destructure the fields
       const { name, price, discount , description} = fields;
@@ -64,13 +87,13 @@ router.post('/creating',async (req,res)=>{
         });
       }
 
-      let product = new Product(fields);
+      let product = new Product({...fields,parent: subCategory._id});
       //handle file here
 
       for(j = 0; j< 4; j++){
         console.log(file[j]);
         if (file[j]) {
-            if (file[j].size > 3000000) {
+            if (file[j].size > 600000) {
               return res.status(400).json({
                 error: "File size too big!",
               });
@@ -83,20 +106,24 @@ router.post('/creating',async (req,res)=>{
       }
       //save to the DB
 
-      product.save((err, product) => {
+      product.save(async(err, product) => {
+
+        subCategory.children.push(product._id);
+
+        await subCategory.save();
 
         if (err) {
           res.status(400).json({
             error: "Saving product in DB failed",
           });
         }
-        console.log('Successs');
-        res.redirect('/product/form');
+
+        res.redirect(`/product/createForm/${req.params.subCategoryId}`);
       });
     });
 });
 
-router.post('/editing/:id',async (req,res)=>{
+router.post('/editing/:subCategoryId/:id',async (req,res)=>{
 
   let form = new formidable.IncomingForm();
   form.keepExtensions = true;
@@ -110,15 +137,22 @@ router.post('/editing/:id',async (req,res)=>{
     }
 
     //destructure the fields
-    const { name, description, discount, price } = fields;
+   
+    const subCategory= await SubCategory.findById(req.params.subCategoryId);
 
-    if (!name || !description || !price || !discount) {
+    if(!subCategory)
+        return res.status(404).send('Sub Category Not Found');
+      
+      //destructure the fields
+    const { name, price, discount , description} = fields;
+
+    if (!name || !discount || !price || !description ) {
       return res.status(400).json({
         error: "Please include all fields",
       });
     }
 
-    let product = await Product.findByIdAndUpdate(req.params.id, {name, description, price, discount}, {
+    let product = await Product.findByIdAndUpdate(req.params.id, {...fields,parent: subCategory._id}, {
       new: true,
     });
     if (!product) return res.status(404).send("Given ID was not found"); //404 is error not found
@@ -129,7 +163,7 @@ router.post('/editing/:id',async (req,res)=>{
     for(j = 0; j< 4; j++){
       if (file[j].size !=0) {
         console.log('pres');
-        if (file[j].size > 3000000) {
+        if (file[j].size > 600000) {
           return res.status(400).json({
             error: "File size too big!",
           });
@@ -148,7 +182,7 @@ router.post('/editing/:id',async (req,res)=>{
           error: "Saving product in DB failed",
         });
       }
-      res.redirect('/product/form');
+      res.redirect(`/product/${req.params.subCategoryId}`);
     });
   });
 });
@@ -158,21 +192,23 @@ router.post('/delete/:id', async (req,res)=>{
     const carts= await Cart.find();
 
     for await (let item of carts){
-      _.remove(item.product, (item)=> {
-        return item.productId == req.params.id
-      });
-
-      console.log(item);
-      
-      await Cart.findByIdAndUpdate(item._id, item ,{new:true});
+      await Cart.findByIdAndUpdate(item._id, {
+        $pull:{
+          product:{
+            productId: req.params.id
+          }
+        }
+      }  ,{new:true});
     }
 
-    const remove= await Product.deleteOne({_id:req.params.id});
+    const removedProduct= await Product.findByIdAndDelete(req.params.id);
 
-    if(!remove)
+    if(!removedProduct)
       return res.status(404).send("Given ID was not found");//404 is error not found*/
+
+    await SubCategory.findByIdAndUpdate(removedProduct.parent, {$pull:{children: req.params.id}} ,{new:true});
     
-    res.redirect('/');
+    res.redirect(`/product/${removedProduct.parent}`);
 });
 
 router.get('/photos/:id/:index' , async (req, res, next) => {
