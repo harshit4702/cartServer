@@ -8,23 +8,52 @@ const {SubCategory}= require('../models/subCategory');
 const {Product}= require('../models/product');
 
 router.get('/',async function(req,res){
-    const products= await Product.find();
+
+    const products = await Product.find();
     res.send(products);
 });
 
-router.get('/:subCategoryId',async function(req,res){
-  const products = await Product.find({parent:req.params.subCategoryId}).populate('parent');
-  
-  if(!products[0])
-    return res.status(404).send('No Product Added');
+router.get('/filter',async function(req,res){
 
-  res.render("index.ejs", { 
-      array: products,
-      type:'product',
-      text: null,
-      link:'',
-      title: `Sub-Category:${products[0].parent.name}`
-  });
+    var products=[];
+
+    if(req.query.search=="number"){
+      products= await Product.aggregate([
+        { 
+          $sample: { 
+            size : req.query.search
+          } 
+        } 
+      ]);
+    }
+    else  if(req.query.search=="all"){
+      products = await Product.find();
+    }
+    else{
+      products = await Product.find({
+        parent: {
+          $in: req.query.search
+        }
+      });
+    }
+
+    res.send(products);
+});
+
+
+router.get('/:subCategoryId',async function(req,res){
+    const products = await Product.find({parent:req.params.subCategoryId}).populate('parent');
+    
+    if(!products[0])
+      return res.status(404).send('No Product Added');
+
+    res.render("index.ejs", { 
+        array: products,
+        type:'product',
+        text: null,
+        link:'',
+        title: `Sub-Category:${products[0].parent.name}`
+    });
 });
 
 router.get('/createForm/:subCategoryId' ,(req , res)=>{
