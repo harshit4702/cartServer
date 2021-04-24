@@ -16,7 +16,7 @@ const SubCategorySchema = new mongoose.Schema({
     }
 });
 
-const SubCategory = mongoose.model('subCategories' , SubCategorySchema) ;
+const SubCategory = mongoose.model('subCategories',SubCategorySchema);
 
 function validateSubCategory(input)
 {
