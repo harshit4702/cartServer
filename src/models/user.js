@@ -1,5 +1,20 @@
 const mongoose =require('mongoose');
 
+const addressSchema= {
+    colony: {
+        type: String
+    },
+    locality: {
+        type: String
+    },
+    city: {
+        type: String
+    },
+    pincode: {
+        type: Number
+    }
+};
+
 const User= mongoose.model('users', new mongoose.Schema({
     name: {
         type: String
@@ -12,8 +27,11 @@ const User= mongoose.model('users', new mongoose.Schema({
         type: String,
         required: true
     },
+    contact: {
+        type: Number
+    },
     address:{
-        type: String
+        type: addressSchema,
     },
     cart: {
         type: mongoose.Schema.Types.ObjectId,
