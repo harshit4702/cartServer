@@ -10,7 +10,7 @@ const Product = mongoose.model('products', new mongoose.Schema({
         contentType: String
     }],
     price: {
-        type: String,
+        type: Number,
         required: true
     },
     description: {

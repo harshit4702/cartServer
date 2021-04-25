@@ -17,6 +17,9 @@ router.get('/filter',async function(req,res){
 
     var products=[];
 
+    if(req.query.sorting)
+      req.query.sorting= JSON.parse(req.query.sorting);
+
     if(req.query.search=="number"){
       products= await Product.aggregate([
         { 
@@ -26,15 +29,15 @@ router.get('/filter',async function(req,res){
         } 
       ]);
     }
-    else  if(req.query.search=="all"){
-      products = await Product.find();
+    else if(req.query.search=="all"){
+      products = await Product.find().sort(req.query.sorting);
     }
     else{
       products = await Product.find({
         parent: {
           $in: req.query.search
         }
-      });
+      }).sort(req.query.sorting);
     }
 
     res.send(products);
