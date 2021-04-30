@@ -55,7 +55,14 @@ router.post('/signUp',async (req,res)=>{
 
 router.post('/login',async(req,res)=>{
 
-    const user = await User.findOne({email:req.body.email});
+    const user = await User.findOne({email:req.body.email}).populate(
+        {
+            path: "orders",
+            populate:{
+                path:"products.product"
+            }
+        }
+    );
 
     if(!user)
         return res.status(404).send("Email or Password doesn't match");
@@ -65,7 +72,7 @@ router.post('/login',async(req,res)=>{
     if(!checkPassword)
         return res.status(404).send("Email or Password doesn't match");
 
-    res.send({_id:user._id,name: user.name,email: user.email,cart:user.cart,address:user.address});
+    res.send({_id:user._id,name: user.name,email: user.email,cart:user.cart,orders:user.orders,address:user.address});
 });
 
 // router.post('/address' , async(req,res) => {

@@ -37,7 +37,11 @@ const User= mongoose.model('users', new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'cart',
         required:true
-    }
+    },
+    orders:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'orders'
+    }]
 },{  timestamps: true }
 ));
 
