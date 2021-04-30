@@ -16,6 +16,7 @@ const userRoutes = require('./routes/userRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const subCategoryRoutes = require('./routes/subCategoryRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 
 mongoose.connect(config.get('db'),{useNewUrlParser: true,useUnifiedTopology: true})
     .then(()=> console.log(`Connected to ${config.get('db')}...`))
@@ -36,7 +37,7 @@ app.use('/cart',cartRoutes);
 app.use('/user',userRoutes);
 app.use('/category',categoryRoutes);
 app.use('/subCategory',subCategoryRoutes);
-
+app.use('/order',orderRoutes);
 
 app.get('/',async function(req,res){
     const categories = await Category.find().populate('subCategories');
