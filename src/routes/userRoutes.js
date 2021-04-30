@@ -75,10 +75,16 @@ router.post('/login',async(req,res)=>{
     res.send({_id:user._id,name: user.name,email: user.email,cart:user.cart,orders:user.orders,address:user.address});
 });
 
-// router.post('/address' , async(req,res) => {
-//     console.log(req.body);
-    
-// });
+router.put('/name' , async(req,res) => {
+    console.log(req.body);
+    const user = await User.findOne({email:req.body.email});
+    if(!user)
+        return res.status(404).send("Email or Password doesn't match");
+
+    user.name = req.body.name;
+    await user.save();
+    res.send(true);
+});
 
 router.put('/editPass',async(req,res)=>{
     const user = await User.findOne({email:req.body.email});
