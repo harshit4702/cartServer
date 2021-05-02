@@ -1,6 +1,6 @@
 const mongoose =require('mongoose');
 
-const productsInCartSchema= {
+const productsInCartSchema=  {
     productId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'products'

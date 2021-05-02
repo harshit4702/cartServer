@@ -60,6 +60,11 @@ router.post('/login',async(req,res)=>{
             path: "orders",
             populate:{
                 path:"products.product"
+            },
+            options: { 
+                sort: { 
+                    'dateOfPurchase': -1 
+                } 
             }
         }
     );
