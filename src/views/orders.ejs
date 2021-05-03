@@ -1,0 +1,51 @@
+<%- include('header.ejs') %>
+
+<div class="ui container text-center">
+
+    <div style="margin-bottom:4vh">
+        <h2 style="color:rgb(24, 112, 228); font-family: 'Josefin Sans', sans-serif;">Orders</h2>
+    </div>
+
+    <form class="ui form" action="/order/searchByEmail" method="post"  enctype="application/json">
+        <label>Email of User</label>
+        <input type="text" id="email" name="email" placeholder="email" />
+        <br/><br/>
+        <input class="ui button primary" type="submit" value="Search" />
+    </form>
+
+    <br/>
+
+    <div style="overflow-x:auto">
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">S.No</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Total Products</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Date of Purchase</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <% for(var i=0;i<orders.length;i++) { %>
+                    <tr>
+                        <th scope="row"><%- i+1 %></th>
+                        <td>
+                            <a href="/order/products/<%- orders[i]._id %>" >
+                                <h5 style="color:black;outline:none"><%- orders[i].emailOfUser %></h5>
+                            </a>
+                        </td>
+                        <td><%- orders[i].typeOfPayment %></td>
+                        <td><%- orders[i].products.length %></td>
+                        <td>₹<%- orders[i].amount %></td>
+                        <td><%- orders[i].dateOfPurchase%></td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+
+</div>

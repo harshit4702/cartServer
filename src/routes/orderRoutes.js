@@ -6,9 +6,28 @@ const { User } = require('../models/user');
 const { Cart } = require('../models/cart');
 
 router.get('/', async function(req,res){
-    const orders = await Order.find().populate(['products.product']);
+    const orders = await Order.find().sort({dateOfPurchase:1}).populate(['products.product']);
     res.send(orders);
 });
+
+router.get('/show',  async (req, res) => {
+    const orders = await Order.find().sort({'dateOfPurchase':-1});
+    res.render("orders", { orders: orders });
+});
+
+router.get('/products/:id',  async (req, res) => {
+    const order = await Order.findById(req.params.id).populate('products.product');
+    const products= order.products;
+    const enumValues= Order.schema.path('products.status').enumValues;
+    console.log(enumValues);
+    res.render("orderDetails", { orderId: order._id, products: products,enumValues: enumValues});
+});
+
+router.post('/searchByEmail',  async (req, res) => {
+    const order = await Order.find({ emailOfUser: req.body.email });
+    res.render("orders", { orders: order });
+});
+
 
 router.post('/:userId', async function(req,res){
 
@@ -34,6 +53,22 @@ router.post('/:userId', async function(req,res){
     console.log(orderInfo);
 
     res.send(orderInfo);
+});
+
+router.post('/:productId/:id',  async (req, res) => {
+
+    let order = await Order.findByIdAndUpdate(req.params.id, {
+        $set: {
+            "products.$[filter].status": req.body.status 
+        } 
+    },{ 
+        arrayFilters: [{ "filter.product": req.params.productId }],
+        new: true
+    });
+    
+    console.log(order);
+
+    res.redirect(`/order/products/${req.params.id}`);
 });
 
 module.exports= router;
