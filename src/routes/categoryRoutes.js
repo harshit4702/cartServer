@@ -68,7 +68,7 @@ router.post('/creating',async (req,res)=>{
       //handle file here
 
       for(j = 0; j< 1; j++){
-        console.log(file[j]);
+        // console.log(file[j]);
         if (file[j]) {
             if (file[j].size > 600000) {
               return res.status(400).json({
@@ -90,7 +90,7 @@ router.post('/creating',async (req,res)=>{
             error: "Saving product in DB failed",
           });
         }
-        console.log('Successs');
+        // console.log('Successs');
         res.redirect('/category/createForm');
       });
     });
@@ -137,7 +137,7 @@ router.post('/editing/:id',async (req,res)=>{
             data: fs.readFileSync(file[j].path),
             contentType: file[j].type
           });
-          console.log(category.src[j]);
+          // console.log(category.src[j]);
       }
     }
       //save to the DB
@@ -162,7 +162,7 @@ router.post('/delete/:id', async (req,res)=>{
     var subCategoryIds=[];
 
     await subCategories.map((subCategory)=>{
-        console.log(`hi=${subCategory}`);
+        // console.log(`hi=${subCategory}`);
         subCategoryIds.push(subCategory._id);
         productIds= [...productIds,...subCategory.children]
     });

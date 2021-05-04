@@ -50,7 +50,7 @@ router.post('/:userId', async function(req,res){
 
     const orderInfo= await Order.findById(order._id).populate(['products.product'])
 
-    console.log(orderInfo);
+    // console.log(orderInfo);
 
     res.send(orderInfo);
 });

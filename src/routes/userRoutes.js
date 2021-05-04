@@ -20,8 +20,8 @@ router.get('/show', async function(req,res){
         // link:'subCategory',
         title: 'Users'
     });
-
 });
+
 
 router.post('/signUp',async (req,res)=>{
 
@@ -53,6 +53,15 @@ router.post('/signUp',async (req,res)=>{
     res.end();
 });
 
+router.patch('/profile/:id',async(req,res)=>{
+    console.log('In profile route');
+    console.log(req.body);
+    let user = await User.findByIdAndUpdate(req.params.id, req.body,{new:true});
+    console.log(user);
+    await user.save();
+    res.send({_id:user._id,name: user.name,email: user.email,cart:user.cart,orders:user.orders,contact:user.contact,address:user.address});
+});
+
 router.post('/login',async(req,res)=>{
 
     const user = await User.findOne({email:req.body.email}).populate(
@@ -68,7 +77,7 @@ router.post('/login',async(req,res)=>{
             }
         }
     );
-
+    console.log(user);
     if(!user)
         return res.status(404).send("Email or Password doesn't match");
     
@@ -77,18 +86,7 @@ router.post('/login',async(req,res)=>{
     if(!checkPassword)
         return res.status(404).send("Email or Password doesn't match");
 
-    res.send({_id:user._id,name: user.name,email: user.email,cart:user.cart,orders:user.orders,address:user.address});
-});
-
-router.put('/name' , async(req,res) => {
-    console.log(req.body);
-    const user = await User.findOne({email:req.body.email});
-    if(!user)
-        return res.status(404).send("Email or Password doesn't match");
-
-    user.name = req.body.name;
-    await user.save();
-    res.send(true);
+    res.send({_id:user._id,name: user.name,email: user.email,cart:user.cart,orders:user.orders,contact:user.contact,address:user.address});
 });
 
 router.put('/editPass',async(req,res)=>{
@@ -112,7 +110,6 @@ router.patch('/edit/:id',async (req,res)=>{
     let user = await User.findByIdAndUpdate(req.params.id, req.body,{ new: true });
     await user.save();
     res.end();
-
 });
 
 router.post('/delete/:id', async (req,res)=>{
@@ -122,7 +119,7 @@ router.post('/delete/:id', async (req,res)=>{
         return res.status(404).send("Given ID was not found");//404 is error not found
     
     res.redirect('/user/show');
-});
+}); 
 
 module.exports= router;
 
