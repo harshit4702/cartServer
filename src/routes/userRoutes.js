@@ -16,8 +16,8 @@ router.get('/show', async function(req,res){
     res.render("user.ejs", { 
         array: users,
         type:'user',
-        // text: 'Add Sub Category',
-        // link:'subCategory',
+        // text: 'Add Sub Cate',
+        // link:'subCateg',
         title: 'Users'
     });
 });
