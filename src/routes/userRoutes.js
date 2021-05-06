@@ -22,7 +22,6 @@ router.get('/show', async function(req,res){
     });
 });
 
-
 router.post('/signUp',async (req,res)=>{
 
     const uniqueUser = await User.findOne({email:req.body.email})
@@ -54,12 +53,11 @@ router.post('/signUp',async (req,res)=>{
 });
 
 router.patch('/profile/:id',async(req,res)=>{
-    console.log('In profile route');
     console.log(req.body);
     let user = await User.findByIdAndUpdate(req.params.id, req.body,{new:true});
     console.log(user);
     await user.save();
-    res.send({_id:user._id,name: user.name,email: user.email,cart:user.cart,orders:user.orders,contact:user.contact,address:user.address});
+    res.send(req.body);
 });
 
 router.post('/login',async(req,res)=>{
