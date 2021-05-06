@@ -47,8 +47,6 @@ router.post('/signUp',async (req,res)=>{
      
     await user.save();
 
-    console.log(user);
-
     res.end();
 });
 
@@ -61,7 +59,6 @@ router.patch('/profile/:id',async(req,res)=>{
 });
 
 router.post('/login',async(req,res)=>{
-
     const user = await User.findOne({email:req.body.email}).populate(
         {
             path: "orders",
