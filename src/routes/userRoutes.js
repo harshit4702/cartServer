@@ -16,12 +16,11 @@ router.get('/show', async function(req,res){
     res.render("user.ejs", { 
         array: users,
         type:'user',
-        // text: 'Add Sub Category',
-        // link:'subCategory',
+        // text: 'Add Sub Cate',
+        // link:'subCateg',
         title: 'Users'
     });
 });
-
 
 router.post('/signUp',async (req,res)=>{
 
@@ -48,22 +47,18 @@ router.post('/signUp',async (req,res)=>{
      
     await user.save();
 
-    console.log(user);
-
     res.end();
 });
 
 router.patch('/profile/:id',async(req,res)=>{
-    console.log('In profile route');
     console.log(req.body);
     let user = await User.findByIdAndUpdate(req.params.id, req.body,{new:true});
     console.log(user);
     await user.save();
-    res.send({_id:user._id,name: user.name,email: user.email,cart:user.cart,orders:user.orders,contact:user.contact,address:user.address});
+    res.send(req.body);
 });
 
 router.post('/login',async(req,res)=>{
-
     const user = await User.findOne({email:req.body.email}).populate(
         {
             path: "orders",
