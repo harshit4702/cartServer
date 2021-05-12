@@ -26,7 +26,6 @@ router.get('/:id', async function(req,res){
 router.post('/',async (req,res)=>{
 
     const cart = new Cart(req.body);
-    
     await cart.save();
 
     res.send(cart._id);
@@ -86,7 +85,6 @@ router.delete('/:id/:productId', async (req,res)=>{
     if(!cart)
         return res.status(404).send("Given ID was not found");//404 is error not found
     res.end();
-
 });
 
 module.exports= router;

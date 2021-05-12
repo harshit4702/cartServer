@@ -14,7 +14,6 @@ router.get('/', async function(req,res){
             path:"children"
         }
     });
-
     res.send(categories);
 });
 
@@ -30,15 +29,13 @@ router.get('/editForm/:id' ,async(req , res)=>{
   const category = await Category.findById(req.params.id);
   if (!category) return res.status(404).send("Given ID was not found");
 
-  const { name,src } = category;
+  const { name } = category;
 
   res.render('categoryForm.ejs', {
     link: `/category/editing/${req.params.id}`,
     name
   });
 });
-
-
 
 router.post('/creating',async (req,res)=>{
     let form = new formidable.IncomingForm();
@@ -65,12 +62,12 @@ router.post('/creating',async (req,res)=>{
       }
 
       let category = new Category(fields);
+      
       //handle file here
-
       for(j = 0; j< 1; j++){
         // console.log(file[j]);
         if (file[j]) {
-            if (file[j].size > 600000) {
+            if (file[j].size > 10000) {
               return res.status(400).json({
                 error: "File size too big!",
               });
@@ -82,9 +79,7 @@ router.post('/creating',async (req,res)=>{
           }
       }
       //save to the DB
-
       category.save((err, category) => {
-
         if (err) {
           res.status(400).json({
             error: "Saving product in DB failed",
@@ -128,7 +123,7 @@ router.post('/editing/:id',async (req,res)=>{
       //handle file here
       for(j = 0; j< 1; j++){
         if (file[j].size !=0) {
-          if (file[j].size > 600000) {
+          if (file[j].size > 10000) {
             return res.status(400).json({
               error: "File size too big!",
             });
@@ -153,9 +148,7 @@ router.post('/editing/:id',async (req,res)=>{
 });
 
 router.post('/delete/:id', async (req,res)=>{
-
     const category= await Category.findById(req.params.id).populate('children');
-
     const subCategories= category.children;
 
     var productIds=[];
@@ -168,7 +161,6 @@ router.post('/delete/:id', async (req,res)=>{
     });
 
     const carts= await Cart.find();
-
     for await (let item of carts){  
         await Cart.findByIdAndUpdate(item._id, {
             $pull:{
@@ -179,15 +171,12 @@ router.post('/delete/:id', async (req,res)=>{
                 }
             }
         }  ,{new:true});
-
     }
-
     const deleteProducts = await Product.deleteMany({
         _id:{
             $in: productIds
         }
     });
-
     const deleteSubCategories = await SubCategory.deleteMany({
         _id:{
             $in: subCategoryIds
@@ -207,7 +196,6 @@ router.get('/photos/:id/:index' , async (req, res, next) => {
       return res.send( category.src[req.params.index].data);
     }
     res.send("not found");
-    
 });
 
 module.exports= router;
