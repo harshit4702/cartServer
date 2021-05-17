@@ -29,7 +29,7 @@ router.post('/searchByEmail',  async (req, res) => {
 });
 
 
-router.post('/:userId', async function(req,res){
+router.post('/cart/:userId', async function(req,res){
 
     const order = new Order(req.body);   
     await order.save();
@@ -47,6 +47,29 @@ router.post('/:userId', async function(req,res){
     await user.save();
 
     await cart.save();
+
+    const orderInfo= await Order.findById(order._id).populate(['products.product'])
+
+    console.log(orderInfo);
+
+    res.send(orderInfo);
+});
+
+router.post('/buyNow/:userId', async function(req,res){
+
+    console.log(req.body);
+    const order = new Order(req.body);   
+    await order.save();
+
+
+
+    const user= await User.findByIdAndUpdate(req.params.userId, {
+        $push:{
+            orders: order._id
+        }
+    }  ,{new:true});
+
+    await user.save();
 
     const orderInfo= await Order.findById(order._id).populate(['products.product'])
 
