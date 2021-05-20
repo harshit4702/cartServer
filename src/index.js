@@ -17,6 +17,8 @@ const cartRoutes = require('./routes/cartRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const subCategoryRoutes = require('./routes/subCategoryRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const carouselRoutes = require('./routes/carouselRoutes');
+const offerRoutes = require('./routes/offerRoutes');
 
 mongoose.connect(config.get('db'),{useNewUrlParser: true,useUnifiedTopology: true})
     .then(()=> console.log(`Connected to ${config.get('db')}...`))
@@ -38,10 +40,12 @@ app.use('/user',userRoutes);
 app.use('/category',categoryRoutes);
 app.use('/subCategory',subCategoryRoutes);
 app.use('/order',orderRoutes);
+app.use('/carousel',carouselRoutes);
+app.use('/offer', offerRoutes);
+
 
 app.get('/',async function(req,res){
     const categories = await Category.find().populate('subCategories');
-
     res.render("index.ejs", { 
         array: categories,
         type:'category',

@@ -11,9 +11,7 @@ router.get('/', async function(req,res){
 });
 
 router.get('/:categoryId',async function(req,res){
-
     const subCategories = await SubCategory.find({parent:req.params.categoryId}).populate('parent');
-
     if(!subCategories[0])
         return res.status(404).send('No Sub-Category Added');
     
@@ -35,14 +33,12 @@ router.get('/createForm/:categoryId' ,async(req , res)=>{
 });
   
 router.get('/editForm/:id' ,async(req , res)=>{
-    
     const subCategory = await SubCategory.findById(req.params.id);
     
     if (!subCategory)
         return res.status(404).send("Given ID was not found");
   
     const {name,category}= subCategory;
-
     res.render('subCategoryForm.ejs', {
         link: `/subCategory/editing/${category}/${req.params.id}`,
         name
@@ -55,7 +51,6 @@ router.post('/creating/:categoryId',async (req,res)=>{
     if(error) return res.status(400).send(error.details[0].message) ;
     
     const category= await Category.findById(req.params.categoryId);
-
     if(!category)
         return res.status(404).send('Category Not Found');
 
@@ -63,7 +58,6 @@ router.post('/creating/:categoryId',async (req,res)=>{
         name: req.body.name,
         parent: req.params.categoryId
     });
-
     category.children.push(subCategory._id);
 
     await category.save();
@@ -82,14 +76,12 @@ router.post('/editing/:categoryId/:id',async (req,res)=>{
 });
 
 router.post('/delete/:id', async (req,res)=>{
-
     const subCategory = await SubCategory.findById(req.params.id);
 
     if(!subCategory)
         return res.status(404).send("Given ID was not found");//404 is error not found
 
     const carts= await Cart.find();
-
     for await (let item of carts){  
         await Cart.findByIdAndUpdate(item._id, {
             $pull:{
@@ -100,9 +92,7 @@ router.post('/delete/:id', async (req,res)=>{
                 }
             }
         }  ,{new:true});
-
     }
-
     const deleteProducts = await Product.deleteMany({
         _id:{
             $in:subCategory.children
@@ -110,7 +100,6 @@ router.post('/delete/:id', async (req,res)=>{
     });
 
     const removedSubCategory= await SubCategory.findByIdAndDelete(req.params.id);
-
     await Category.findByIdAndUpdate(removedSubCategory.parent, {
         $pull:{
             children: req.params.id

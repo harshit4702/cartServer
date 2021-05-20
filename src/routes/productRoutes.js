@@ -134,7 +134,7 @@ router.post('/creating/:subCategoryId',async (req,res)=>{
       for(j = 0; j< 4; j++){
         console.log(file[j]);
         if (file[j]) {
-            if (file[j].size > 600000) {
+            if (file[j].size > 100000) {
               return res.status(400).json({
                 error: "File size too big!",
               });
@@ -204,7 +204,7 @@ router.post('/editing/:subCategoryId/:id',async (req,res)=>{
     for(j = 0; j< 4; j++){
       if (file[j].size !=0) {
         console.log('pres');
-        if (file[j].size > 600000) {
+        if (file[j].size > 100000) {
           return res.status(400).json({
             error: "File size too big!",
           });
