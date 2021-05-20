@@ -13,6 +13,14 @@ router.get('/',async function(req,res){
     res.send(products);
 });
 
+router.get('/search',async function(req,res){
+  var regex = new RegExp(req.query.name,'i');
+  console.log(regex);
+  const products = await Product.find({name: regex});
+  console.log(products);
+  res.send(products);
+});
+
 router.get('/filter',async function(req,res){
 
     var products=[];

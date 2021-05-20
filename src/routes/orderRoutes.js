@@ -61,8 +61,6 @@ router.post('/buyNow/:userId', async function(req,res){
     const order = new Order(req.body);   
     await order.save();
 
-
-
     const user= await User.findByIdAndUpdate(req.params.userId, {
         $push:{
             orders: order._id
