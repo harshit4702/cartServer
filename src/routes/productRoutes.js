@@ -14,7 +14,6 @@ router.get('/',async function(req,res){
 });
 
 router.get('/search',async function(req,res){
-  console.log(req.query.name);
   var regex = new RegExp(req.query.name,'i');
   console.log(regex);
   const products = await Product.find({name: regex});
