@@ -4,13 +4,14 @@ const {SubCategory , validate} = require('../models/subCategory');
 const {Category } = require('../models/category');
 const {Product } = require('../models/product');
 const {Cart } = require('../models/cart');
+const authAdmin = require('../middleware/authAdmin');
 
 router.get('/', async function(req,res){
     const subCategory= await SubCategory.find();
     res.send(subCategory);
 });
 
-router.get('/:categoryId',async function(req,res){
+router.get('/:categoryId',authAdmin ,async function(req,res){
     const subCategories = await SubCategory.find({parent:req.params.categoryId}).populate('parent');
     if(!subCategories[0])
         return res.status(404).send('No Sub-Category Added');
@@ -24,7 +25,7 @@ router.get('/:categoryId',async function(req,res){
     });
 });
 
-router.get('/createForm/:categoryId' ,async(req , res)=>{
+router.get('/createForm/:categoryId' ,authAdmin,async(req , res)=>{
     res.render('subCategoryForm.ejs', {
         link: `/subCategory/creating/${req.params.categoryId}`,
         name:"",
@@ -32,7 +33,7 @@ router.get('/createForm/:categoryId' ,async(req , res)=>{
     });
 });
   
-router.get('/editForm/:id' ,async(req , res)=>{
+router.get('/editForm/:id',authAdmin,async(req , res)=>{
     const subCategory = await SubCategory.findById(req.params.id);
     
     if (!subCategory)
@@ -45,7 +46,7 @@ router.get('/editForm/:id' ,async(req , res)=>{
     });
 });
   
-router.post('/creating/:categoryId',async (req,res)=>{
+router.post('/creating/:categoryId',authAdmin,async (req,res)=>{
    console.log(req.body);
     const { error } = validate(req.body) ;
     if(error) return res.status(400).send(error.details[0].message) ;
@@ -66,7 +67,7 @@ router.post('/creating/:categoryId',async (req,res)=>{
     res.redirect(`/subCategory/createForm/${req.params.categoryId}`);
 });
 
-router.post('/editing/:categoryId/:id',async (req,res)=>{
+router.post('/editing/:categoryId/:id',authAdmin,async (req,res)=>{
     const { error } = validate(req.body) ;
     if(error) return res.status(400).send(error.details[0].message) ;
 
@@ -75,7 +76,7 @@ router.post('/editing/:categoryId/:id',async (req,res)=>{
     res.redirect(`/subCategory/${req.params.categoryId}`);
 });
 
-router.post('/delete/:id', async (req,res)=>{
+router.post('/delete/:id', authAdmin ,async (req,res)=>{
     const subCategory = await SubCategory.findById(req.params.id);
 
     if(!subCategory)

@@ -8,7 +8,7 @@ const cors= require('cors');
 const { Category }= require('./models/category');
 const { SubCategory }= require('./models/subCategory');
 const jwt  = require('jsonwebtoken');
-const auth = require('./middleware/auth');
+const authAdmin = require('./middleware/authAdmin');
 app.set("view engine", "ejs");
 app.set('views', './src/views');
 
@@ -20,7 +20,6 @@ const subCategoryRoutes = require('./routes/subCategoryRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const carouselRoutes = require('./routes/carouselRoutes');
 const offerRoutes = require('./routes/offerRoutes');
-
 
 if(!config.get('jwtPrivateKey')){
     console.error('Fatal error: jwtPrivateKey is not defined.');
@@ -63,13 +62,13 @@ app.post('/getLogin' , async(req,res)=>{
     {
         const token = jwt.sign({email: req.body.email , password: req.body.password} , config.get('jwtPrivateKey'));
         console.log(token);
-        res.cookie('secure', token , {secure : false , expires: new Date(Number(new Date()) + 5*60*1000), httpOnly: false });
+        res.cookie('x-auth-token', token , {secure : false , expires: new Date(Number(new Date()) + 24*60*60*1000), httpOnly: false });
         res.redirect('/');
     }
     res.status(401).send('Incorrect Password');
 }); 
 
-app.get('/',auth,async function(req,res){
+app.get('/',authAdmin,async function(req,res){
     const categories = await Category.find().populate('subCategories');
     res.render("index.ejs", { 
         array: categories,

@@ -6,6 +6,7 @@ const fs = require("fs");
 const { Cart } = require('../models/cart');
 const {SubCategory}= require('../models/subCategory');
 const {Product}= require('../models/product');
+const authAdmin = require('../middleware/authAdmin');
 
 router.get('/',async function(req,res){
 
@@ -52,7 +53,7 @@ router.get('/filter',async function(req,res){
 });
 
 
-router.get('/:subCategoryId',async function(req,res){
+router.get('/:subCategoryId',authAdmin,async function(req,res){
     const products = await Product.find({parent:req.params.subCategoryId}).populate('parent');
     
     if(!products[0])
@@ -67,7 +68,7 @@ router.get('/:subCategoryId',async function(req,res){
     });
 });
 
-router.get('/createForm/:subCategoryId' ,(req , res)=>{
+router.get('/createForm/:subCategoryId',authAdmin,(req , res)=>{
     res.render('productForm.ejs', {
       link: `/product/creating/${req.params.subCategoryId}`,
       id: null,
@@ -80,7 +81,7 @@ router.get('/createForm/:subCategoryId' ,(req , res)=>{
     });
 });
 
-router.get('/editForm/:id' ,async(req , res)=>{
+router.get('/editForm/:id',authAdmin,async(req , res)=>{
 
     const product = await Product.findById(req.params.id);
 
@@ -100,7 +101,7 @@ router.get('/editForm/:id' ,async(req , res)=>{
     });
 });
 
-router.post('/creating/:subCategoryId',async (req,res)=>{
+router.post('/creating/:subCategoryId',authAdmin,async (req,res)=>{
     let form = new formidable.IncomingForm();
     form.keepExtensions = true;
     
@@ -165,7 +166,7 @@ router.post('/creating/:subCategoryId',async (req,res)=>{
     });
 });
 
-router.post('/editing/:subCategoryId/:id',async (req,res)=>{
+router.post('/editing/:subCategoryId/:id',authAdmin,async (req,res)=>{
 
   let form = new formidable.IncomingForm();
   form.keepExtensions = true;
@@ -229,7 +230,7 @@ router.post('/editing/:subCategoryId/:id',async (req,res)=>{
   });
 });
 
-router.post('/delete/:id', async (req,res)=>{
+router.post('/delete/:id', authAdmin,async (req,res)=>{
 
     const carts= await Cart.find();
 
@@ -261,7 +262,6 @@ router.get('/photos/:id/:index' , async (req, res, next) => {
     return res.send( product.src[req.params.index].data);
   }
   res.send("not found");
-  
 });
 
 module.exports= router;

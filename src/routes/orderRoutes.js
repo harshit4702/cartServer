@@ -4,18 +4,19 @@ const {Order}= require('../models/order');
 const {Product } = require('../models/product');
 const { User } = require('../models/user');
 const { Cart } = require('../models/cart');
+const authAdmin = require('../middleware/authAdmin');
 
 router.get('/', async function(req,res){
     const orders = await Order.find().sort({dateOfPurchase:1}).populate(['products.product']);
     res.send(orders);
 });
 
-router.get('/show',  async (req, res) => {
+router.get('/show',authAdmin,async (req, res) => {
     const orders = await Order.find().sort({'dateOfPurchase':-1});
     res.render("orders", { orders: orders });
 });
 
-router.get('/products/:id',  async (req, res) => {
+router.get('/products/:id', authAdmin, async (req, res) => {
     const order = await Order.findById(req.params.id).populate('products.product');
     const products= order.products;
     const enumValues= Order.schema.path('products.status').enumValues;
@@ -23,7 +24,7 @@ router.get('/products/:id',  async (req, res) => {
     res.render("orderDetails", { orderId: order._id, products: products,enumValues: enumValues});
 });
 
-router.post('/searchByEmail',  async (req, res) => {
+router.post('/searchByEmail', authAdmin, async (req, res) => {
     const order = await Order.find({ emailOfUser: req.body.email });
     res.render("orders", { orders: order });
 });
@@ -76,7 +77,7 @@ router.post('/buyNow/:userId', async function(req,res){
     res.send(orderInfo);
 });
 
-router.post('/:productId/:id',  async (req, res) => {
+router.post('/:productId/:id',authAdmin, async (req, res) => {
 
     let order = await Order.findByIdAndUpdate(req.params.id, {
         $set: {

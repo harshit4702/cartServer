@@ -1,7 +1,7 @@
 const express= require('express');
 const router= express.Router();
 const bcrypt = require('bcrypt');
-
+const authAdmin = require('../middleware/authAdmin');
 const {User}= require('../models/user');
 const {Cart}= require('../models/cart');
 
@@ -10,7 +10,7 @@ router.get('/', async function(req,res){
     res.send(users);
 });
 
-router.get('/show', async function(req,res){
+router.get('/show',authAdmin, async function(req,res){
     const users = await User.find();
 
     res.render("user.ejs", { 
@@ -46,7 +46,6 @@ router.post('/signUp',async (req,res)=>{
     });
      
     await user.save();
-
     res.end();
 });
 
