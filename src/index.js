@@ -7,7 +7,8 @@ var cookieParser = require('cookie-parser');
 const cors= require('cors');
 const { Category }= require('./models/category');
 const { SubCategory }= require('./models/subCategory');
-
+const jwt  = require('jsonwebtoken');
+const auth = require('./middleware/auth');
 app.set("view engine", "ejs");
 app.set('views', './src/views');
 
@@ -19,6 +20,12 @@ const subCategoryRoutes = require('./routes/subCategoryRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const carouselRoutes = require('./routes/carouselRoutes');
 const offerRoutes = require('./routes/offerRoutes');
+
+
+if(!config.get('jwtPrivateKey')){
+    console.error('Fatal error: jwtPrivateKey is not defined.');
+    process.exit(1);
+}
 
 mongoose.connect(config.get('db'),{useNewUrlParser: true,useUnifiedTopology: true})
     .then(()=> console.log(`Connected to ${config.get('db')}...`))
@@ -43,8 +50,26 @@ app.use('/order',orderRoutes);
 app.use('/carousel',carouselRoutes);
 app.use('/offer', offerRoutes);
 
+app.get('/login' , async(req,res)=> {
+    res.render("login.ejs", {
+        email: "",
+        password: ""
+    });
+}); 
 
-app.get('/',async function(req,res){
+app.post('/getLogin' , async(req,res)=>{
+    console.log(req.body);
+    if(req.body.password === config.get('password') && req.body.email=== config.get('email'))
+    {
+        const token = jwt.sign({email: req.body.email , password: req.body.password} , config.get('jwtPrivateKey'));
+        console.log(token);
+        res.cookie('secure', token , {secure : false , expires: new Date(Number(new Date()) + 5*60*1000), httpOnly: false });
+        res.redirect('/');
+    }
+    res.status(401).send('Incorrect Password');
+}); 
+
+app.get('/',auth,async function(req,res){
     const categories = await Category.find().populate('subCategories');
     res.render("index.ejs", { 
         array: categories,

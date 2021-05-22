@@ -4,6 +4,8 @@ const {Carousel} = require('../models/carousel');
 const { Category } = require('../models/category');
 const formidable = require("formidable");
 const fs = require("fs");
+const auth = require('../middleware/auth');
+
 
 router.get('/',async (req, res) => {
     const carousels = await Carousel.find();
@@ -23,7 +25,7 @@ router.get('/show',async (req, res) => {
     });
 });
 
-router.get('/photos/:id/' , async (req, res, next) => {
+router.get('/photos/:id/' , auth , async (req, res, next) => {
   const carousel = await Carousel.findById( req.params.id );
   if (carousel.photo.data) {
     res.set("Content-Type", carousel.photo.contentType);
@@ -44,7 +46,7 @@ router.get('/addImg' , async(req,res)=>{
     });
 });
 
-router.post('/newImg',async (req, res) => {
+router.post('/newImg',auth , async (req, res) => {
     let form = new formidable.IncomingForm();
     form.keepExtensions = true;
   
@@ -89,7 +91,7 @@ router.post('/newImg',async (req, res) => {
     });
 });
 
-router.post('/delete/:id', async (req,res)=>{
+router.post('/delete/:id',auth, async (req,res)=>{
     
     const remove= await Carousel.deleteOne({_id:req.params.id});
     if(!remove)

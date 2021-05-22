@@ -4,6 +4,7 @@ const  _ = require('lodash');
 const {Cart}= require('../models/cart');
 const { Product } = require('../models/product');
 const { User } = require('../models/user');
+const auth = require('../middleware/auth');
 
 router.get('/', async function(req,res){
     const carts= await Cart.find();

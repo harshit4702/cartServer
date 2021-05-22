@@ -4,6 +4,8 @@ const {Offer} = require('../models/offer');
 const {SubCategory} = require('../models/subCategory');
 const formidable = require("formidable");
 const fs = require("fs");
+const auth = require('../middleware/auth');
+
 
 router.get('/show',async (req, res) => {
     const offer = await Offer.find().populate('subCategory');
@@ -17,7 +19,7 @@ router.get('/show',async (req, res) => {
     });
 });
 
-router.get('/photos/:id/' , async (req, res, next) => {
+router.get('/photos/:id/' , auth ,async (req, res, next) => {
   const offer = await Offer.findById( req.params.id );
   if (offer.photo.data) {
     res.set("Content-Type", offer.photo.contentType);
@@ -25,6 +27,7 @@ router.get('/photos/:id/' , async (req, res, next) => {
   }
   res.send("not found");
 });
+
 
 router.get('/addImg' , async(req,res)=>{
     let subCategories = await SubCategory.find();
@@ -38,7 +41,7 @@ router.get('/addImg' , async(req,res)=>{
     });
 });
 
-router.post('/newImg',async (req, res) => {
+router.post('/newImg',auth,async (req, res) => {
     let form = new formidable.IncomingForm();
     form.keepExtensions = true;
   
@@ -81,7 +84,7 @@ router.post('/newImg',async (req, res) => {
     });
 });
 
-router.post('/delete/:id', async (req,res)=>{
+router.post('/delete/:id', auth,async (req,res)=>{
     
     const remove= await Offer.deleteOne({_id:req.params.id});
     if(!remove)

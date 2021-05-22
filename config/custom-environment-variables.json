@@ -1,3 +1,6 @@
 {
-    "db":"cartServer_db"
+    "db":"cartServer_db",
+    "email": "email",
+    "password": "password",
+    "jwtPrivateKey": "jwtPrivateKey"
 }

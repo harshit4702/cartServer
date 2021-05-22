@@ -1,3 +1,5 @@
 {
-    "db": "mongodb://localhost/cartServer"
+    "db": "mongodb://localhost/cartServer",
+    "email": "email@gmail.com",
+    "password": "password"
 }
