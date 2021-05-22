@@ -21,6 +21,10 @@ const Product = mongoose.model('products', new mongoose.Schema({
         type: String,
         required: true
     },
+    stockQuantity:{
+        type: Number,
+        required:true
+    },
     parent:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'subCategories'

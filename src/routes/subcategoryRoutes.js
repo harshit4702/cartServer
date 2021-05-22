@@ -6,8 +6,8 @@ const {Product } = require('../models/product');
 const {Cart } = require('../models/cart');
 
 router.get('/', async function(req,res){
-    const subcategory= await Subcategory.find();
-    res.send(subcategory);
+    const subCategory= await SubCategory.find();
+    res.send(subCategory);
 });
 
 router.get('/:categoryId',async function(req,res){

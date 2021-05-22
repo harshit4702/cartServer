@@ -3,10 +3,12 @@ const mongoose =require('mongoose');
 const Carousel = mongoose.model('carousel', new mongoose.Schema({
     photo: {
         data: Buffer,
-        contentType: String,
+        contentType: String
     },
     category: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'categories',
+        required: true
     }
 },{  timestamps: true }
 ));

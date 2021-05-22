@@ -17,6 +17,9 @@
         <label for="price">Price</label>
         <input type="number" id="price" name="price" value="<%- price %>" /><br /><br />
 
+        <label for="stockQuantity">Total Quantity Available In Stock</label>
+        <input type="number" id="stockQuanitity" name="stockQuantity" value="<%- stockQuantity %>" /><br /><br />
+
         <% for(var i=0; i < 4 ; i++) { %>
 
             <label for="src[<%- i %>]">Upload an Image <%- i+1 %> </label>
