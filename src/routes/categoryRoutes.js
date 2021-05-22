@@ -3,9 +3,10 @@ const router = express.Router();
 const formidable = require("formidable");
 const fs = require("fs");
 const { Cart } = require('../models/cart');
-const {Category , validate} = require('../models/category');
+const {Category } = require('../models/category');
 const {SubCategory} = require('../models/subCategory');
 const {Product} = require('../models/product');
+const auth = require('../middleware/auth');
 
 router.get('/', async function(req,res){
     const categories = await Category.find().populate({
@@ -17,7 +18,7 @@ router.get('/', async function(req,res){
     res.send(categories);
 });
 
-router.get('/createForm' ,(req , res)=>{
+router.get('/createForm', (req , res)=>{
     res.render('categoryForm.ejs', {
       link: "/category/creating",
       name:"",
@@ -91,7 +92,7 @@ router.post('/creating',async (req,res)=>{
     });
 });
 
-router.post('/editing/:id',async (req,res)=>{
+router.post('/editing/:id' ,async (req,res)=>{
 
     let form = new formidable.IncomingForm();
     form.keepExtensions = true;
@@ -188,7 +189,7 @@ router.post('/delete/:id', async (req,res)=>{
     res.redirect('/');
 });
 
-router.get('/photos/:id/:index' , async (req, res, next) => {
+router.get('/photos/:id/:index', async (req, res, next) => {
     const category = await Category.findById( req.params.id );
   
     if (category.src[req.params.index].data) {
