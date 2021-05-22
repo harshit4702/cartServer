@@ -19,7 +19,7 @@
                     <img class="card-img-top" src="/<%- type %>/photos/<%- array[i]._id %>" style="height:25vh; width:16vw" alt="No Image Available">
                   </a>
                   <div class="card-body">
-                    <h5 class="card-title"><%- label %> <%- array[i].category %> <%- array[i].subcategory %></h5>
+                    <h5 class="card-title"><%- label %> <%- array[i].category?array[i].category.name:array[i].subCategory.name %></h5>
                   </div>
                   <div class="card-body">
                     <a href="#" data-toggle="modal" data-target="#exampleModal<%- i %>" class="card-link">Delete</a>

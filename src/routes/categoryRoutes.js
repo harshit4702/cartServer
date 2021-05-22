@@ -67,7 +67,7 @@ router.post('/creating',async (req,res)=>{
       for(j = 0; j< 1; j++){
         // console.log(file[j]);
         if (file[j]) {
-            if (file[j].size > 10000) {
+            if (file[j].size > 50000) {
               return res.status(400).json({
                 error: "File size too big!",
               });
@@ -123,7 +123,7 @@ router.post('/editing/:id',async (req,res)=>{
       //handle file here
       for(j = 0; j< 1; j++){
         if (file[j].size !=0) {
-          if (file[j].size > 10000) {
+          if (file[j].size > 50000) {
             return res.status(400).json({
               error: "File size too big!",
             });
