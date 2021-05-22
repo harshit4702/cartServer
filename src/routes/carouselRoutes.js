@@ -6,15 +6,22 @@ const formidable = require("formidable");
 const fs = require("fs");
 const auth = require('../middleware/auth');
 
-router.get('/show', auth , async (req, res) => {
+
+router.get('/',async (req, res) => {
+    const carousels = await Carousel.find();
+    res.send(carousels);
+});
+
+router.get('/show',async (req, res) => {
   console.log('HI');
-    const carousel = await Carousel.find();
+    const carousels = await Carousel.find().populate('category');
+    console.log(carousels);
     res.render('showCarousel.ejs', {
         type: "carousel",
         title: "Carousel Images",
         photo: "",
         label: "Category : ",
-        array: carousel,
+        array: carousels,
     });
 });
 
@@ -27,9 +34,9 @@ router.get('/photos/:id/' , auth , async (req, res, next) => {
   res.send("not found");
 });
 
-router.get('/addImg' , auth ,async(req,res)=>{
-    let categories = await Category.find().select('-_id , name');
-    res.render('carousel.ejs', {
+router.get('/addImg' , async(req,res)=>{
+    let categories = await Category.find();
+    res.render('carouselform.ejs', {
         link: '/carousel/newImg',
         photo: "",
         label: "Choose Category",
@@ -53,9 +60,9 @@ router.post('/newImg',auth , async (req, res) => {
       console.log(fields);
 
       //destructure the fields
-      const { inbody } = fields;
+      const { category } = fields;
 
-      if (!inbody) {
+      if (!category) {
         return res.status(400).json({
           error: "Please include all fields",
         });
@@ -63,7 +70,7 @@ router.post('/newImg',auth , async (req, res) => {
       let carousel = new Carousel(fields);
       //handle file here
       if (file.photo) {
-        if (file.photo.size > 100000) {
+        if (file.photo.size > 1000000) {
           return res.status(400).json({
             error: "File size too big!",
           });
@@ -71,7 +78,7 @@ router.post('/newImg',auth , async (req, res) => {
         carousel.photo.data = fs.readFileSync(file.photo.path);
         carousel.photo.contentType = file.photo.type;
       }
-      carousel.category = inbody ;
+      carousel.category = category ;
       //save to the DB
       carousel.save((err, carousel) => {
         if (err) {

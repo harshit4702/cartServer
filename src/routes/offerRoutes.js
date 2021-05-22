@@ -1,13 +1,14 @@
 const express= require('express');
 const router= express.Router();
-const {Offer} = require('../models/offers');
+const {Offer} = require('../models/offer');
 const {SubCategory} = require('../models/subCategory');
 const formidable = require("formidable");
 const fs = require("fs");
 const auth = require('../middleware/auth');
 
-router.get('/show',auth,async (req, res) => {
-    const offer = await Offer.find();
+
+router.get('/show',async (req, res) => {
+    const offer = await Offer.find().populate('subCategory');
     res.render('showCarousel.ejs', {
       type: "offer",
       title: "Offer Images",
@@ -27,14 +28,15 @@ router.get('/photos/:id/' , auth ,async (req, res, next) => {
   res.send("not found");
 });
 
-router.get('/addImg' , auth ,async(req,res)=>{
-    let subcategories = await SubCategory.find().select('-_id , name');
-    res.render('carousel.ejs', {
+
+router.get('/addImg' , async(req,res)=>{
+    let subCategories = await SubCategory.find();
+    res.render('offerForm.ejs', {
         link: '/offer/newImg',
         photo: "",
         label: "Choose Subcategory",
         title: "Add Offer Image",
-        array: subcategories,
+        array: subCategories,
         inbody: ""
     });
 });
@@ -50,9 +52,9 @@ router.post('/newImg',auth,async (req, res) => {
         });
       }
       //destructure the fields
-      const { inbody } = fields;
-      console.log(`In body ${inbody} `);
-      if (!inbody) {
+      const { subCategory } = fields;
+      console.log(`In body ${subCategory} `);
+      if (!subCategory) {
         return res.status(400).json({
           error: "Please include all fields",
         });
@@ -60,7 +62,7 @@ router.post('/newImg',auth,async (req, res) => {
       let offer = new Offer(fields);
       //handle file here
       if (file.photo) {
-        if (file.photo.size > 100000) {
+        if (file.photo.size > 500000) {
           return res.status(400).json({
             error: "File size too big!",
           });
@@ -68,7 +70,7 @@ router.post('/newImg',auth,async (req, res) => {
         offer.photo.data = fs.readFileSync(file.photo.path);
         offer.photo.contentType = file.photo.type;
       }
-      offer.subcategory = inbody ;
+      offer.subCategory = subCategory ;
       
       //save to the DB
       offer.save((err, offer) => {

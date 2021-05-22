@@ -5,8 +5,10 @@ const Offer = mongoose.model('offers', new mongoose.Schema({
         data: Buffer,
         contentType: String,
     },
-    subcategory: {
-        type: String,
+    subCategory: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'subCategories',
+        required: true
     }
 },{  timestamps: true }
 ));
