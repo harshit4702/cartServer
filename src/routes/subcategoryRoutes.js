@@ -14,7 +14,6 @@ router.get('/:categoryId',async function(req,res){
     const subCategories = await SubCategory.find({parent:req.params.categoryId}).populate('parent');
     if(!subCategories[0])
         return res.status(404).send('No Sub-Category Added');
-    
     res.render("index.ejs", { 
         array: subCategories,
         type:'subCategory',
