@@ -4,44 +4,33 @@ const {Offer} = require('../models/offer');
 const {SubCategory} = require('../models/subCategory');
 const formidable = require("formidable");
 const fs = require("fs");
-const auth = require('../middleware/auth');
+const authAdmin = require('../middleware/authAdmin');
 
-
-router.get('/show',async (req, res) => {
-    const offer = await Offer.find().populate('subCategory');
-    res.render('showCarousel.ejs', {
+router.get('/show',authAdmin,async (req, res) => {
+    const offers = await Offer.find().populate('photo.subCategory');
+    res.render('showOffer.ejs', {
       type: "offer",
       title: "Offer Images",
       link: "",
       photo: "",
       label: "Subcategory : ",
-      array: offer,
+      array: offers,
     });
 });
 
-router.get('/photos/:id/' , auth ,async (req, res, next) => {
-  const offer = await Offer.findById( req.params.id );
-  if (offer.photo.data) {
-    res.set("Content-Type", offer.photo.contentType);
-    return res.send( offer.photo.data);
-  }
-  res.send("not found");
-});
-
-
-router.get('/addImg' , async(req,res)=>{
+router.get('/createForm' , authAdmin,async(req,res)=>{
     let subCategories = await SubCategory.find();
     res.render('offerForm.ejs', {
         link: '/offer/newImg',
         photo: "",
-        label: "Choose Subcategory",
+        // label: "Choose Subcategory",
         title: "Add Offer Image",
         array: subCategories,
         inbody: ""
     });
 });
 
-router.post('/newImg',auth,async (req, res) => {
+router.post('/newImg',authAdmin,async (req, res) => {
     let form = new formidable.IncomingForm();
     form.keepExtensions = true;
   
@@ -51,27 +40,37 @@ router.post('/newImg',auth,async (req, res) => {
           error: "problem with image",
         });
       }
+      // console.log(fields , file);
+
       //destructure the fields
-      const { subCategory } = fields;
-      console.log(`In body ${subCategory} `);
-      if (!subCategory) {
+      const { subCategory1 ,subCategory2,subCategory3  } = fields;
+      if (!subCategory1 || !subCategory2 || !subCategory3) {
         return res.status(400).json({
           error: "Please include all fields",
         });
       }
-      let offer = new Offer(fields);
-      //handle file here
-      if (file.photo) {
-        if (file.photo.size > 500000) {
-          return res.status(400).json({
-            error: "File size too big!",
-          });
-        }
-        offer.photo.data = fs.readFileSync(file.photo.path);
-        offer.photo.contentType = file.photo.type;
-      }
-      offer.subCategory = subCategory ;
+      var subCategories = [subCategory1 , subCategory2 , subCategory3];
+      let offer = new Offer({});
       
+      var files = Object.values(file);
+      //handle file here
+      for(j = 0; j< 3; j++){
+        if (files[j]) {
+            if (files[j].size > 500000) {
+              return res.status(400).json({
+                error: "File size too big!",
+              });
+            }
+            offer.photo.push({
+              src:{
+                data: fs.readFileSync(files[j].path),
+                contentType: files[j].type
+              },
+              subCategory: subCategories[j]
+            });
+          }
+      }
+      console.log(offer);
       //save to the DB
       offer.save((err, offer) => {
         if (err) {
@@ -79,18 +78,27 @@ router.post('/newImg',auth,async (req, res) => {
             error: "Saving product in DB failed",
           });
         }
-        res.redirect("/offer/show");
+        res.redirect("/offer/createForm");
       });
     });
 });
 
-router.post('/delete/:id', auth,async (req,res)=>{
+router.post('/delete/:id', authAdmin,async (req,res)=>{
     
     const remove= await Offer.deleteOne({_id:req.params.id});
     if(!remove)
         return res.status(404).send("Given ID was not found");//404 is error not found
     
     res.redirect('/offer/show');
+});
+
+router.get('/photos/:id/:index' ,async (req, res) => {
+  const offer = await Offer.findById( req.params.id );
+  if (offer.photo[req.params.index].src.data) {
+    res.set("Content-Type", offer.photo[req.params.index].src.contentType);
+    return res.send( offer.photo[req.params.index].src.data);
+  }
+  res.send("not found");
 });
 
 module.exports= router;

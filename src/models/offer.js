@@ -1,15 +1,16 @@
 const mongoose =require('mongoose');
 
 const Offer = mongoose.model('offers', new mongoose.Schema({
-    photo: {
-        data: Buffer,
-        contentType: String,
-    },
-    subCategory: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'subCategories',
-        required: true
-    }
+    photo:[{
+        src:{
+            data: Buffer,
+            contentType: String
+        },
+        subCategory: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'subCategories'
+        }
+    }],
 },{  timestamps: true }
 ));
 

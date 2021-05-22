@@ -6,9 +6,9 @@ const { Cart } = require('../models/cart');
 const {Category } = require('../models/category');
 const {SubCategory} = require('../models/subCategory');
 const {Product} = require('../models/product');
-const auth = require('../middleware/auth');
+const authAdmin = require('../middleware/authAdmin');
 
-router.get('/', async function(req,res){
+router.get('/',async function(req,res){
     const categories = await Category.find().populate({
         path: "children",
         populate:{
@@ -18,7 +18,7 @@ router.get('/', async function(req,res){
     res.send(categories);
 });
 
-router.get('/createForm', (req , res)=>{
+router.get('/createForm',authAdmin, (req , res)=>{
     res.render('categoryForm.ejs', {
       link: "/category/creating",
       name:"",
@@ -26,7 +26,7 @@ router.get('/createForm', (req , res)=>{
     });
 });
 
-router.get('/editForm/:id' ,async(req , res)=>{
+router.get('/editForm/:id',authAdmin,async(req , res)=>{
   const category = await Category.findById(req.params.id);
   if (!category) return res.status(404).send("Given ID was not found");
 
@@ -38,7 +38,7 @@ router.get('/editForm/:id' ,async(req , res)=>{
   });
 });
 
-router.post('/creating',async (req,res)=>{
+router.post('/creating',authAdmin,async (req,res)=>{
     let form = new formidable.IncomingForm();
     form.keepExtensions = true;
     
@@ -92,7 +92,7 @@ router.post('/creating',async (req,res)=>{
     });
 });
 
-router.post('/editing/:id' ,async (req,res)=>{
+router.post('/editing/:id',authAdmin,async (req,res)=>{
 
     let form = new formidable.IncomingForm();
     form.keepExtensions = true;
@@ -148,7 +148,7 @@ router.post('/editing/:id' ,async (req,res)=>{
     });
 });
 
-router.post('/delete/:id', async (req,res)=>{
+router.post('/delete/:id',authAdmin, async (req,res)=>{
     const category= await Category.findById(req.params.id).populate('children');
     const subCategories= category.children;
 
