@@ -14,9 +14,9 @@
 
     <div class="row text-center">
         <% for(var i=0; i<array.length ; i++) { %>
-            <div style="background-color: bisque; display: inline-flex; margin-left: 2vw; margin-bottom:1vh; ">
+            <div style="overflow-x:auto;background-color: bisque; display: inline-flex;width:100vw; margin-left: 2vw; margin-bottom:2vh; ">
                 <% for(var j=0; j<3 ; j++) { %>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <div class="card" style="width: 18rem; margin:2vw;">
                             <a>
                                 <img class="card-img-top" src="/<%- type %>/photos/<%- array[i]._id %>/<%- j %>" style="height:25vh; width:16vw" alt="No Image Available">
@@ -27,7 +27,7 @@
                         </div>
                     </div>
                 <% } %>
-                <div style="margin-top: 15vh;" class="card-body">
+                <div class="col-sm-3 card-body" style="margin-top: 15vh;">
                     <a href="#" data-toggle="modal" data-target="#exampleModal<%- i %>" class="card-link"><button  style="background-color: bisque; border-radius:10px ;"> Delete  </button></a>
                 </div>
                 <%- include('deleteModal.ejs',{link: `/${type}/delete/${array[i]._id}`, Sno: i }) %>
