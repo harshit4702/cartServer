@@ -14,6 +14,7 @@
 
     <div class="row text-center">
         <% for(var i=0; i<array.length ; i++) { %>
+
             <div style="overflow-x:auto;background-color: bisque; display: inline-flex;width:100vw; margin-left: 2vw; margin-bottom:2vh; ">
                 <% for(var j=0; j<3 ; j++) { %>
                     <div class="col-sm-3">
@@ -27,11 +28,12 @@
                         </div>
                     </div>
                 <% } %>
-                <div class="col-sm-3 card-body" style="margin-top: 15vh;">
-                    <a href="#" data-toggle="modal" data-target="#exampleModal<%- i %>" class="card-link"><button  style="background-color: bisque; border-radius:10px ;"> Delete  </button></a>
+
+                <div style="margin-top: 10vh;" class="card-body">
+                    <a href="/offer/editForm/<%- array[i]._id %>"class="card-link"><button  style="background-color: rgb(238, 238, 235); border-radius:10px ;"> Edit  </button></a>
+                    <a href="#" data-toggle="modal" data-target="#exampleModal<%- i %>" class="card-link"><button  style="margin-top: 3vh; background-color: rgb(238, 238, 235); border-radius:10px ;"> Delete  </button></a>
                 </div>
                 <%- include('deleteModal.ejs',{link: `/${type}/delete/${array[i]._id}`, Sno: i }) %>
-
             </div>
         <% } %>
     </div>
