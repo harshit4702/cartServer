@@ -18,6 +18,11 @@ router.get('/',async function(req,res){
     res.send(categories);
 });
 
+router.get('/only',async function(req,res){
+  const categories = await Category.find();
+  res.send(categories);
+});
+
 router.get('/createForm',authAdmin, (req , res)=>{
     res.render('categoryForm.ejs', {
       link: "/category/creating",
