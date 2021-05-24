@@ -6,6 +6,11 @@ const formidable = require("formidable");
 const fs = require("fs");
 const authAdmin = require('../middleware/authAdmin');
 
+router.get('/',async (req, res) => {
+  const offers = await Offer.find().populate('photo.subCategory');
+  res.send(offers);
+});
+
 router.get('/show',authAdmin,async (req, res) => {
     const offers = await Offer.find().populate('photo.subCategory');
     res.render('showOffer.ejs', {
@@ -70,7 +75,6 @@ router.post('/newImg',authAdmin,async (req, res) => {
             });
           }
       }
-      console.log(offer);
       //save to the DB
       offer.save((err, offer) => {
         if (err) {
@@ -78,7 +82,7 @@ router.post('/newImg',authAdmin,async (req, res) => {
             error: "Saving product in DB failed",
           });
         }
-        res.redirect("/offer/createForm");
+        res.redirect("/offer/show");
       });
     });
 });

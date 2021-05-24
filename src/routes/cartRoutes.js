@@ -12,6 +12,14 @@ router.get('/', async function(req,res){
 
 router.get('/:id', async function(req,res){
     console.log(req.params.id);
+
+    if(req.params.id=="null"){
+        console.log('inside');
+        return res.send(null);
+    }
+
+    console.log(req.params.id);
+
     var arr=[];
     const cart= await Cart.find({_id:req.params.id});
     for await (let item of cart[0].product){
