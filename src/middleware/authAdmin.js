@@ -3,7 +3,6 @@ const config  = require('config');
 
 module.exports = function auth(req,res,next){
     const authcookie = req.cookies['x-auth-token'] ;
-    console.log(authcookie);
     
     if(!authcookie) 
         return res.redirect('/login');

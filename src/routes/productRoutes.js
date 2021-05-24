@@ -18,7 +18,7 @@ router.get('/search',async function(req,res){
   var regex = new RegExp(req.query.name,'i');
   console.log(regex);
   const products = await Product.find({name: regex});
-  console.log(products);
+  // console.log(products);
   res.send(products);
 });
 
@@ -201,7 +201,7 @@ router.post('/editing/:subCategoryId/:id',authAdmin,async (req,res)=>{
     if (!product) return res.status(404).send("Given ID was not found"); //404 is error not found
     
     //Clearing previous Images
-
+    
     //handle file here
     for(j = 0; j< 4; j++){
       if (file[j].size !=0) {
