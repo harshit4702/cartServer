@@ -58,19 +58,7 @@ router.patch('/profile/:id',async(req,res)=>{
 });
 
 router.post('/login',async(req,res)=>{
-    const user = await User.findOne({email:req.body.email}).populate(
-        {
-            path: "orders",
-            populate:{
-                path:"products.product"
-            },
-            options: { 
-                sort: { 
-                    'dateOfPurchase': -1 
-                } 
-            }
-        }
-    );
+    const user = await User.findOne({email:req.body.email});
     console.log(user);
     if(!user)
         return res.status(404).send("Email or Password doesn't match");
