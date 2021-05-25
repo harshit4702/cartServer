@@ -13,10 +13,8 @@ router.get('/', async function(req,res){
 router.get('/:id', async function(req,res){
     console.log(req.params.id);
 
-    if(req.params.id=="null"){
-        console.log('inside');
+    if(req.params.id=="null")
         return res.send(null);
-    }
 
     console.log(req.params.id);
 
