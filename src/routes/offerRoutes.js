@@ -113,8 +113,6 @@ router.post('/editing/:id',authAdmin,async (req,res)=>{
         error: "problem with image",
       });
     }
-    console.log(file);
-    console.log(fields);
     const { subCategory1 ,subCategory2,subCategory3  } = fields;
       if (!subCategory1 || !subCategory2 || !subCategory3) {
         return res.status(400).json({
@@ -123,27 +121,23 @@ router.post('/editing/:id',authAdmin,async (req,res)=>{
       }
       var subCategories = [subCategory1 , subCategory2 , subCategory3];
       let offer = await Offer.findById(req.params.id);
-      
       var files = Object.values(file);
-      //handle file here
+      // handle file here
       for(j = 0; j< 3; j++){
-        if (files[j]) {
+        if (files[j].size!=0) {
             if (files[j].size > 500000) {
               return res.status(400).json({
                 error: "File size too big!",
               });
             }
 
-            offer.photo.push({
-              src:{
-                data: fs.readFileSync(files[j].path),
-                contentType: files[j].type
-              },
-              subCategory: subCategories[j]
-            });
+            offer.photo[j].src = {
+              data: fs.readFileSync(files[j].path),
+              contentType: files[j].type
+            }
           }
+          offer.photo[j].subCategory = subCategories[j]
       }
-
     //save to the DB
     offer.save((err, offer) => {
       if (err) {
@@ -151,12 +145,10 @@ router.post('/editing/:id',authAdmin,async (req,res)=>{
           error: "Saving product in DB failed",
         });
       }
-      res.redirect('/');
+      res.redirect('/offer/show');
     });
   });
 });
-
-
 
 router.post('/delete/:id', authAdmin,async (req,res)=>{
     
