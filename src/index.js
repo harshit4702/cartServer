@@ -30,9 +30,10 @@ mongoose.connect(config.get('db'),{useNewUrlParser: true,useUnifiedTopology: tru
 mongoose.set('useCreateIndex', true);
 mongoose.set('useFindAndModify', false);
 
-app.use(express.static("./src/public"));
 app.set("view engine", "ejs");
 app.set('views', './src/views');
+
+app.use(express.static("./src/public"));
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -46,6 +47,8 @@ app.use('/subCategory',subCategoryRoutes);
 app.use('/order',orderRoutes);
 app.use('/carousel',carouselRoutes);
 app.use('/offer', offerRoutes);
+
+
 
 app.get('/login' , async(req,res)=> {
     res.render("login.ejs", {
