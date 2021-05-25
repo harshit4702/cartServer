@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 const productSchema=  {
     product: {
@@ -11,12 +12,15 @@ const productSchema=  {
     status: {
       type: String,
       default: "Processing",
-      enum: ["Cancelled", "Delivered", "Shipped", "Processing", "Recieved", "Returning", "Refunded", "Request Return"]
+      enum: ["Processing","Shipped","Recieved","Delivered","Returning", "Refunded", "Request Return","Cancelled"]
     },
     expectedDate: {
       type: Date,
-      default: Date.now()+4
-    }
+      default: Date.now()+4*24*60*60*1000
+    },
+    deliveredDate:{
+        type: Date
+    },
 };
 
 const addressSchema= {
@@ -35,6 +39,9 @@ const addressSchema= {
 };
 
 const OrderSchema = new mongoose.Schema({
+    orderNo:{
+        type: Number
+    },
     nameOfUser: {
         type: String
     },
@@ -57,13 +64,11 @@ const OrderSchema = new mongoose.Schema({
     amount: { 
         type: Number, 
         required: true
-    },
-    dateOfPurchase: {
-      type: Date,
-      default: Date.now()
     }
-  },
+  },{  timestamps: true }
 );
+
+OrderSchema.plugin(AutoIncrement, {id: 'order_counter',inc_field: 'orderNo',start_seq:100001});
 
 const Order = mongoose.model("orders", OrderSchema);
 
