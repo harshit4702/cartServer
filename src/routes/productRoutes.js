@@ -201,24 +201,34 @@ router.post('/editing/:subCategoryId/:id',authAdmin,async (req,res)=>{
     if (!product) return res.status(404).send("Given ID was not found"); //404 is error not found
     
     //Clearing previous Images
-    
+    // console.log(product);
+    // console.log('in src');
+    // console.log(product.src);
+    var file = Object.values(file);
+    console.log(file);
+  // console.log(product.src);
+
     //handle file here
     for(j = 0; j< 4; j++){
-      if (file[j].size !=0) {
+      if (file[j].size != 0) {
         console.log('pres');
+        console.log(j);
         if (file[j].size > 200000) {
           return res.status(400).json({
             error: "File size too big!",
           });
         }
-        product.src.splice( j , 1 , {
+        console.log(file[j].path);
+        product.src[j] = {
           data: fs.readFileSync(file[j].path),
           contentType: file[j].type
-        });
-        console.log(product.src[j]);
+        }
+        // console.log(product.src[j]);
     }
   }
-    //save to the DB
+  // console.log(product);
+  // console.log('in src');
+    // save to the DB
     product.save((err, product) => {
       if (err) {
         res.status(400).json({

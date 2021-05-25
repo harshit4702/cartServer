@@ -9,9 +9,6 @@ const { Category }= require('./models/category');
 const { SubCategory }= require('./models/subCategory');
 const jwt  = require('jsonwebtoken');
 const authAdmin = require('./middleware/authAdmin');
-app.set("view engine", "ejs");
-app.set('views', './src/views');
-
 const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
 const cartRoutes = require('./routes/cartRoutes');
@@ -34,7 +31,8 @@ mongoose.set('useCreateIndex', true);
 mongoose.set('useFindAndModify', false);
 
 app.use(express.static("./src/public"));
-
+app.set("view engine", "ejs");
+app.set('views', './src/views');
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
