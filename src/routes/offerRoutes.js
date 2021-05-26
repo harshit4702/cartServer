@@ -43,8 +43,6 @@ router.post('/newImg',authAdmin,async (req, res) => {
           error: "problem with image",
         });
       }
-      // console.log(fields , file);
-
       //destructure the fields
       const { subCategory1 ,subCategory2,subCategory3  } = fields;
       if (!subCategory1 || !subCategory2 || !subCategory3) {
@@ -102,7 +100,6 @@ router.get('/editForm/:id',async(req , res)=>{
 });
 
 router.post('/editing/:id',authAdmin,async (req,res)=>{
-
   let form = new formidable.IncomingForm();
   form.keepExtensions = true;
 
@@ -124,19 +121,18 @@ router.post('/editing/:id',authAdmin,async (req,res)=>{
       var files = Object.values(file);
       // handle file here
       for(j = 0; j< 3; j++){
-        if (files[j].size!=0) {
+        if (files[j].size){
             if (files[j].size > 500000) {
               return res.status(400).json({
                 error: "File size too big!",
               });
             }
-
             offer.photo[j].src = {
               data: fs.readFileSync(files[j].path),
               contentType: files[j].type
             }
           }
-          offer.photo[j].subCategory = subCategories[j]
+          offer.photo[j].subCategory = subCategories[j];
       }
     //save to the DB
     offer.save((err, offer) => {
