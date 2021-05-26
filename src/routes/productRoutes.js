@@ -26,6 +26,8 @@ router.get('/filter',async function(req,res){
 
     var products=[];
 
+    console.log(req.query);
+
     if(req.query.sorting)
       req.query.sorting= JSON.parse(req.query.sorting);
 
@@ -33,7 +35,7 @@ router.get('/filter',async function(req,res){
       products= await Product.aggregate([
         { 
           $sample: { 
-            size : req.query.search
+            size : Number(req.query.size)
           } 
         } 
       ]);
