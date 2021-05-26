@@ -63,7 +63,7 @@ app.post('/getLogin' , async(req,res)=>{
     {
         const token = jwt.sign({email: req.body.email , password: req.body.password} , config.get('jwtPrivateKey'));
         console.log(token);
-        res.cookie('x-auth-token', token , {secure : false , expires: new Date(Number(new Date()) + 24*60*60*1000), httpOnly: false });
+        res.cookie('x-auth-token-admin', token , {secure : false , expires: new Date(Number(new Date()) + 24*60*60*1000), httpOnly: false });
         res.redirect('/');
     }
     res.status(401).send('Incorrect Password');

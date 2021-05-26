@@ -2,6 +2,9 @@ const express= require('express');
 const router= express.Router();
 const bcrypt = require('bcrypt');
 const authAdmin = require('../middleware/authAdmin');
+const jwt = require('jsonwebtoken');
+const config=  require('config');
+const _ = require('lodash');
 const {User}= require('../models/user');
 const {Cart}= require('../models/cart');
 
@@ -49,17 +52,10 @@ router.post('/signUp',async (req,res)=>{
     res.end();
 });
 
-router.patch('/profile/:id',async(req,res)=>{
-    console.log(req.body);
-    let user = await User.findByIdAndUpdate(req.params.id, req.body,{new:true});
-    console.log(user);
-    await user.save();
-    res.send(req.body);
-});
-
 router.post('/login',async(req,res)=>{
-    const user = await User.findOne({email:req.body.email});
-    console.log(user);
+
+    const user = await User.findOne({email:req.body.email}); 
+
     if(!user)
         return res.status(404).send("Email or Password doesn't match");
     
@@ -67,8 +63,35 @@ router.post('/login',async(req,res)=>{
     
     if(!checkPassword)
         return res.status(404).send("Email or Password doesn't match");
+    
+    const token = jwt.sign({email: user.email , password: user.password} , config.get('jwtPrivateKey'));
 
-    res.send({_id:user._id,name: user.name,email: user.email,cart:user.cart,orders:user.orders,contact:user.contact,address:user.address});
+    const userObject= {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        cart: user.cart,
+        orders: user.orders,
+        contact: user.contact,
+        address: user.address,
+        isUserVerified: user.isUserVerified
+    }
+
+    console.log(userObject);
+
+    res.cookie('x-auth-token', token , {secure : false , expires: new Date(Number(new Date()) + 30*24*60*60*1000), httpOnly: false });
+    res.cookie('user', userObject , {secure : false , expires: new Date(Number(new Date()) + 30*24*60*60*1000), httpOnly: false });
+
+    res.send(userObject);
+});
+
+
+router.patch('/profile/:id',async(req,res)=>{
+    console.log(req.body);
+    let user = await User.findByIdAndUpdate(req.params.id, req.body,{new:true});
+    console.log(user);
+    await user.save();
+    res.send(req.body);
 });
 
 router.put('/editPass',async(req,res)=>{

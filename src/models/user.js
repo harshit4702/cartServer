@@ -42,7 +42,11 @@ const User= mongoose.model('users', new mongoose.Schema({
     orders:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'orders'
-    }]
+    }],
+    isUserVerified:{
+        type: Boolean,
+        default: false
+    }
 },{  timestamps: true }
 ));
 
