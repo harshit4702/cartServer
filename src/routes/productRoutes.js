@@ -30,7 +30,7 @@ router.get('/filter',async function(req,res){
       products= await Product.aggregate([
         { 
           $sample: { 
-            size : req.query.search
+            size : Number(req.query.size)
           } 
         } 
       ]);
