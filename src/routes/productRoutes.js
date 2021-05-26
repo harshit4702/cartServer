@@ -9,7 +9,6 @@ const {Product}= require('../models/product');
 const authAdmin = require('../middleware/authAdmin');
 
 router.get('/',async function(req,res){
-
     const products = await Product.find();
     res.send(products);
 });
@@ -23,9 +22,7 @@ router.get('/search',async function(req,res){
 });
 
 router.get('/filter',async function(req,res){
-
     var products=[];
-
     if(req.query.sorting)
       req.query.sorting= JSON.parse(req.query.sorting);
 
@@ -199,14 +196,8 @@ router.post('/editing/:subCategoryId/:id',authAdmin,async (req,res)=>{
       new: true,
     });
     if (!product) return res.status(404).send("Given ID was not found"); //404 is error not found
-    
-    //Clearing previous Images
-    // console.log(product);
-    // console.log('in src');
-    // console.log(product.src);
-    var file = Object.values(file);
+    // var file = Object.values(file);
     console.log(file);
-  // console.log(product.src);
 
     //handle file here
     for(j = 0; j< 4; j++){
@@ -223,11 +214,8 @@ router.post('/editing/:subCategoryId/:id',authAdmin,async (req,res)=>{
           data: fs.readFileSync(file[j].path),
           contentType: file[j].type
         }
-        // console.log(product.src[j]);
     }
   }
-  // console.log(product);
-  // console.log('in src');
     // save to the DB
     product.save((err, product) => {
       if (err) {
