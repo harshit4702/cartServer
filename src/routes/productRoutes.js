@@ -90,7 +90,7 @@ router.get('/editForm/:id',authAdmin,async(req , res)=>{
     if (!product)
       return res.status(404).send("Given ID was not found");
 
-    const { name, description, price, src, discount,parent } = product;
+    const { name, description, price, src, discount,parent,stockQuantity } = product;
     res.render("productForm.ejs", {
       link: `/product/editing/${parent}/${req.params.id}`,
       id: product._id,
@@ -98,7 +98,7 @@ router.get('/editForm/:id',authAdmin,async(req , res)=>{
       description,
       price,
       src,
-      stockQuantity:"",
+      stockQuantity,
       discount
     });
 });
