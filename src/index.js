@@ -13,6 +13,7 @@ const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
+const mailRoutes = require('./routes/mailRoutes');
 const subCategoryRoutes = require('./routes/subCategoryRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const carouselRoutes = require('./routes/carouselRoutes');
@@ -47,7 +48,7 @@ app.use('/subCategory',subCategoryRoutes);
 app.use('/order',orderRoutes);
 app.use('/carousel',carouselRoutes);
 app.use('/offer', offerRoutes);
-
+app.use('/mail', mailRoutes);
 
 
 app.get('/login' , async(req,res)=> {
