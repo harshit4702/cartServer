@@ -48,14 +48,16 @@ router.post('/cart/:userId', async function(req,res){
         product: []
     }  ,{new:true});
 
-    await user.save();
-
-    await cart.save();
+    for await (let item of order.products){
+        console.log(item.quantity);
+        const product= await Product.findByIdAndUpdate(item.product, {
+            $inc: {
+                stockQuantity : -Number(item.quantity)
+            }
+        }  ,{new:true});
+    }
 
     const orderInfo= await Order.findById(order._id).populate(['products.product'])
-
-    console.log(orderInfo);
-
     res.send(orderInfo);
 });
 
@@ -71,11 +73,16 @@ router.post('/buyNow/:userId', async function(req,res){
         }
     }  ,{new:true});
 
-    await user.save();
+    for await (let item of order.products){
+        console.log(item.quantity);
+        const product= await Product.findByIdAndUpdate(item.product, {
+            $inc: {
+                stockQuantity : -Number(item.quantity)
+            }
+        }  ,{new:true});
+    }
 
     const orderInfo= await Order.findById(order._id).populate(['products.product'])
-
-    console.log(orderInfo);
 
     res.send(orderInfo);
 });

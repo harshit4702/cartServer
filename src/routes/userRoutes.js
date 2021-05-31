@@ -23,6 +23,7 @@ router.get('/show',authAdmin, async function(req,res){
         // link:'subCateg',
         title: 'Users'
     });
+    
 });
 
 router.post('/signUp',async (req,res)=>{
