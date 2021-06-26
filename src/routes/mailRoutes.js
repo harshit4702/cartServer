@@ -3,6 +3,7 @@ const router= express.Router();
 const mailer = require("nodemailer");
 const {Login}= require('../public/login_template');
 const {User} = require('../models/user');
+const config = require('config');
 
 const getEmailData = (to,template,rand , host) => {
     let data = null;
@@ -11,7 +12,7 @@ const getEmailData = (to,template,rand , host) => {
         case "verify":
             const link = `http://${host}/mail/success` ;
             data = {
-                from: "arjitbhandari222830@gmail.com",
+                from: config.get('company_email'),
                 to,
                 subject: `Hello subject verify ${to}`,
                 html: Login(link,rand,to)
@@ -20,7 +21,7 @@ const getEmailData = (to,template,rand , host) => {
 
         case "success":
             data = {
-                from: "arjitbhandari222830@gmail.com",
+                from: config.get('company_email'),
                 to,
                 subject: `Hello success ${to}`,
                 html: "Success"
@@ -37,8 +38,8 @@ const sendEmail = async(to,type,rand,host) => {
     const smtpTransport = mailer.createTransport({
         service: "gmail",
         auth: {
-            user: "arjitbhandari222830@gmail.com",
-            pass: "Arjit222830@"
+            user: config.get('company_email'),
+            pass: config.get('company_password')
         }
     })
 
