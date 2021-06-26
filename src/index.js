@@ -18,6 +18,7 @@ const subCategoryRoutes = require('./routes/subCategoryRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const carouselRoutes = require('./routes/carouselRoutes');
 const offerRoutes = require('./routes/offerRoutes');
+const pincodeRoutes = require('./routes/pincodeRoutes');
 
 if(!config.get('jwtPrivateKey')){
     console.error('Fatal error: jwtPrivateKey is not defined.');
@@ -49,7 +50,7 @@ app.use('/order',orderRoutes);
 app.use('/carousel',carouselRoutes);
 app.use('/offer', offerRoutes);
 app.use('/mail', mailRoutes);
-
+app.use('/pincode', pincodeRoutes);
 
 app.get('/login' , async(req,res)=> {
     res.render("login.ejs", {

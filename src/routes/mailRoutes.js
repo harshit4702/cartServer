@@ -1,34 +1,89 @@
 const express= require('express');
 const router= express.Router();
-const {sendEmail} = require('../mail');
+const mailer = require("nodemailer");
+const {Login}= require('../public/login_template');
+const {User} = require('../models/user');
 
-router.post("/verify", (req, res) => {
+const getEmailData = (to,template,rand , host) => {
+    let data = null;
+
+    switch (template) {
+        case "verify":
+            const link = `http://${host}/mail/success` ;
+            data = {
+                from: "arjitbhandari222830@gmail.com",
+                to,
+                subject: `Hello subject verify ${to}`,
+                html: Login(link,rand,to)
+            }
+            break;
+
+        case "success":
+            data = {
+                from: "arjitbhandari222830@gmail.com",
+                to,
+                subject: `Hello success ${to}`,
+                html: "Success"
+            }
+            break;
+        default:
+            data;
+    }
+    return data;
+}
+
+const sendEmail = async(to,type,rand,host) => {
+
+    const smtpTransport = mailer.createTransport({
+        service: "gmail",
+        auth: {
+            user: "arjitbhandari222830@gmail.com",
+            pass: "Arjit222830@"
+        }
+    })
+
+    const mail = getEmailData(to,type,rand,host);
+
+    console.log(mail);
+    try {
+        await smtpTransport.sendMail(mail);
+        console.log( "email sent successfully");
+    } 
+    catch(error){
+        console.log('Error');
+        console.log(error);
+        smtpTransport.close();
+    }
+}
+
+router.post("/verify", async(req, res) => {
     const rand = Math.floor((Math.random() * 100) + 54);
     const host = req.get('host') ;
-    sendEmail(req.body.email, "verify" , rand ,host);
-    console.log('Hi');
+    await sendEmail(req.body.email, "verify" , rand ,host);
+    res.end();
 });
 
-router.post('/success',function(req,res){
+router.post('/success',async(req,res)=>{
     const host = req.get('host') ;
 
-    if((`${req.protocol}://${host}` == `http://${host}`))
-    {
-        console.log("Domain is matched. Information is from Authentic email");
-        if(req.body.rand)
-        {
-            sendEmail(req.body.email,"success",0,null);
-            res.redirect(`${req.protocol}://localhost:3000`);
-        }
-        else
-        {
-            console.log("email is not verified");
-        }
+    if((`${req.protocol}://${host}` != `http://${host}`))
+        return res.send("<h3>Request is from unknown source</h3>");
+
+    console.log("Domain is matched. Information is from Authentic email");
+   
+    if(!req.body.rand){
+        console.log("email is not verified");
+        return res.end();
     }
-    else
-    {
-        res.end("<h1>Request is from unknown source");
-    }
+
+    const user= await User.findOneAndUpdate({email: req.body.email}, {
+        isUserVerified: true
+    },{new:true}).select('-password');
+
+    console.log(user);
+    
+    await sendEmail(req.body.email,"success",0,null);
+    res.cookie('user', user , {secure : false , expires: new Date(Number(new Date()) + 24*60*60*1000), httpOnly: false }).redirect(`${req.protocol}://localhost:3000`);
 });
 
 module.exports = router ;
