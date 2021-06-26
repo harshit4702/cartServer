@@ -57,7 +57,6 @@ app.get('/login' , async(req,res)=> {
         password: ""
     });
 }); 
-
 app.post('/getLogin' , async(req,res)=>{
     console.log(req.body);
     if(req.body.password === config.get('password') && req.body.email=== config.get('email'))
