@@ -6,7 +6,6 @@ const config= require('config');
 var cookieParser = require('cookie-parser');
 const cors= require('cors');
 const { Category }= require('./models/category');
-const { SubCategory }= require('./models/subCategory');
 const jwt  = require('jsonwebtoken');
 const authAdmin = require('./middleware/authAdmin');
 const productRoutes = require('./routes/productRoutes');
