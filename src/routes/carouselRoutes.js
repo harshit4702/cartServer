@@ -26,7 +26,7 @@ router.get('/show',authAdmin ,async (req, res) => {
 
 router.get('/createForm' ,authAdmin , async(req,res)=>{
     let categories = await Category.find();
-    res.render('carouselform.ejs', {
+    res.render('carouselForm.ejs', {
         link: '/carousel/newImg',
         photo: "",
         label: "Choose Category",
