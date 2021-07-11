@@ -1,0 +1,16 @@
+<%- include('header.ejs') %>
+
+<div class="ui container form">
+
+    <div class="text-center">
+        <h2 style="color:rgb(24, 112, 228); font-family: 'Josefin Sans', sans-serif;">Pin-code Form</h2>
+    </div>
+
+    <form class="ui form" action="<%- link %>" method="post">
+
+        <label for="pin">Pin Value</label>
+        <input type="number" id="pin" name="pin" value="<%- pin %>" /><br /><br />
+        
+        <input class="ui button primary" type="submit" placeholder="click to submit" />
+    </form>
+</div>

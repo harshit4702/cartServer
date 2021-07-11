@@ -19,6 +19,7 @@ const carouselRoutes = require('./routes/carouselRoutes');
 const offerRoutes = require('./routes/offerRoutes');
 const pincodeRoutes = require('./routes/pincodeRoutes');
 
+require('./prod');
 
 if(!config.get('jwtPrivateKey')){
     console.error('Fatal error: jwtPrivateKey is not defined.');
