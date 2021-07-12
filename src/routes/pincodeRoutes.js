@@ -51,7 +51,6 @@ router.post('/',async (req,res)=>{
 });
 
 router.post('/edit/:id', authAdmin,async (req,res)=>{
-
     let pincode = await Pincode.findByIdAndUpdate(req.params.id, req.body,{new:true});
 
     console.log(pincode);
@@ -66,7 +65,6 @@ router.post('/delete/:id', authAdmin ,async (req,res)=>{
     if(!pincode)
         return res.status(404).send("Given ID was not found");//404 is error not found
   
-
     res.redirect('/pincode/show');
 });
 
