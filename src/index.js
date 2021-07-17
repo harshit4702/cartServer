@@ -39,8 +39,9 @@ app.set('views', './src/views');
 app.use(express.static("./src/public"));
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
 app.use(cors());
+app.use(cookieParser());
+
 
 app.use('/product',productRoutes);
 app.use('/cart',cartRoutes);
