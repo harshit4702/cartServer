@@ -5,12 +5,12 @@ const {Login}= require('../public/login_template');
 const {User} = require('../models/user');
 const config = require('config');
 
-const getEmailData = (to,template,rand , host) => {
+const getEmailData = (to,template,rand , host , protocol) => {
     let data = null;
 
     switch (template) {
         case "verify":
-            const link = `https://${host}/mail/success` ;
+            const link = `${protocol}://${host}/mail/success` ;
             data = {
                 from: config.get('company_email'),
                 to,
@@ -33,7 +33,7 @@ const getEmailData = (to,template,rand , host) => {
     return data;
 }
 
-const sendEmail = async(to,type,rand,host) => {
+const sendEmail = async(to,type,rand,host,protocol) => {
 
     const smtpTransport = mailer.createTransport({
         service: "gmail",
@@ -43,7 +43,7 @@ const sendEmail = async(to,type,rand,host) => {
         }
     })
 
-    const mail = getEmailData(to,type,rand,host);
+    const mail = getEmailData(to,type,rand,host,protocol);
 
     console.log(mail);
     try {
@@ -60,7 +60,8 @@ const sendEmail = async(to,type,rand,host) => {
 router.post("/verify", async(req, res) => {
     const rand = Math.floor((Math.random() * 100) + 54);
     const host = req.get('host') ;
-    await sendEmail(req.body.email, "verify" , rand ,host);
+
+    await sendEmail(req.body.email, "verify" , rand ,host , req.protocol);
     res.end();
 });
 
@@ -82,8 +83,8 @@ router.post('/success',async(req,res)=>{
     },{new:true}).select('-password');
 
     console.log(user);
-    await sendEmail(req.body.email,"success",0,null);
-    res.cookie('user', user , {secure : false , expires: new Date(Number(new Date()) + 24*60*60*1000), httpOnly: false }).redirect(`${req.protocol}://localhost:3000`);
+    await sendEmail(req.body.email,"success",0,null,req.protocol);
+    res.cookie('user', user , {secure : false , expires: new Date(Number(new Date()) + 24*60*60*1000), httpOnly: false }).redirect(`${req.protocol}://${host}`);
 });
 
 module.exports = router ;
