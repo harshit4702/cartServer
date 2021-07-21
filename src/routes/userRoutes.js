@@ -78,12 +78,7 @@ router.post('/login',async(req,res)=>{
         isUserVerified: user.isUserVerified
     }
 
-    console.log(userObject);
-
-    res.cookie('x-auth-token', token , {secure : false , expires: new Date(Number(new Date()) + 30*24*60*60*1000), httpOnly: false });
-    res.cookie('user', userObject , {secure : false , expires: new Date(Number(new Date()) + 30*24*60*60*1000), httpOnly: false });
-
-    res.send(userObject);
+    res.send({token,userObject});
 });
 
 
