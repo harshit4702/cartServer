@@ -81,8 +81,7 @@ router.post('/success',async(req,res)=>{
     const user= await User.findOneAndUpdate({email: req.body.email}, {
         isUserVerified: true
     },{new:true}).select('-password');
-
-    console.log(user);
+    
     await sendEmail(req.body.email,"success",0,null,req.protocol);
     res.cookie('user', user , {secure : false , expires: new Date(Number(new Date()) + 24*60*60*1000), httpOnly: false }).redirect(`${req.protocol}://${host}`);
 });
