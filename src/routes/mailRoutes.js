@@ -10,7 +10,7 @@ const getEmailData = (to,template,rand , host) => {
 
     switch (template) {
         case "verify":
-            const link = `http://${host}/mail/success` ;
+            const link = `https://${host}/mail/success` ;
             data = {
                 from: config.get('company_email'),
                 to,
@@ -65,9 +65,9 @@ router.post("/verify", async(req, res) => {
 });
 
 router.post('/success',async(req,res)=>{
-    const host = req.get('host') ;
-
-    if((`${req.protocol}://${host}` != `http://${host}`))
+    const host = req.get('host');
+        
+    if((`${req.protocol}://${host}` != `https://${host}` && `${req.protocol}://${host}` != `http://${host}`))
         return res.send("<h3>Request is from unknown source</h3>");
 
     console.log("Domain is matched. Information is from Authentic email");
@@ -82,7 +82,6 @@ router.post('/success',async(req,res)=>{
     },{new:true}).select('-password');
 
     console.log(user);
-    
     await sendEmail(req.body.email,"success",0,null);
     res.cookie('user', user , {secure : false , expires: new Date(Number(new Date()) + 24*60*60*1000), httpOnly: false }).redirect(`${req.protocol}://localhost:3000`);
 });
